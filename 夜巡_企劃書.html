@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>《夜巡》｜寶城人壽 VVIP 互動企劃</title>
+<style>
+:root{
+  --bg:#0B0C0E;
+  --bg2:#101216;
+  --surface:#15181D;
+  --surface2:#1B1F26;
+  --line:#2A2F38;
+  --gold:#C9A227;
+  --gold-l:#E3C86B;
+  --gold-d:#8A6F1A;
+  --ink:#EAE7E0;
+  --muted:#8E8B84;
+  --dim:#6B6862;
+  --red:#B8443C;
+  --green:#5E8C61;
+  --serif:"Noto Serif TC","Songti TC","Source Han Serif TC","STSong",serif;
+  --sans:"PingFang TC","Noto Sans TC","Helvetica Neue",-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.85;
+  letter-spacing:.02em;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(900px 600px at 15% -5%, rgba(201,162,39,.09), transparent 60%),
+    radial-gradient(700px 500px at 90% 8%, rgba(201,162,39,.05), transparent 65%);
+}
+.wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:0 32px}
+
+/* ─── COVER ─── */
+.cover{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:80px 0 60px}
+.kicker{font-size:12px;letter-spacing:.42em;color:var(--gold);text-transform:uppercase;margin-bottom:40px}
+.cover h1{
+  font-family:var(--serif);font-weight:500;
+  font-size:clamp(76px,15vw,168px);line-height:.92;letter-spacing:.1em;
+  color:var(--ink);margin-bottom:8px;
+}
+.cover .en{font-size:13px;letter-spacing:.5em;color:var(--dim);margin-bottom:48px;text-transform:uppercase}
+.cover .lead{font-family:var(--serif);font-size:clamp(20px,3vw,30px);line-height:1.7;color:var(--gold-l);max-width:22em;margin-bottom:56px}
+.cover .meta{border-top:1px solid var(--line);padding-top:24px;display:flex;flex-wrap:wrap;gap:40px;font-size:13px;color:var(--muted)}
+.cover .meta b{display:block;color:var(--ink);font-weight:400;font-size:15px;margin-top:4px}
+
+/* ─── SECTIONS ─── */
+section{padding:96px 0;border-top:1px solid var(--line)}
+.tag{display:flex;align-items:baseline;gap:16px;margin-bottom:14px}
+.tag .no{font-family:var(--serif);font-size:12px;letter-spacing:.3em;color:var(--gold);border:1px solid var(--gold-d);padding:4px 10px}
+.tag .lbl{font-size:11px;letter-spacing:.36em;color:var(--dim);text-transform:uppercase}
+h2{font-family:var(--serif);font-weight:500;font-size:clamp(34px,5vw,52px);line-height:1.25;letter-spacing:.06em;margin-bottom:20px}
+h3{font-family:var(--serif);font-weight:500;font-size:24px;letter-spacing:.05em;margin:44px 0 16px;color:var(--gold-l)}
+h4{font-size:15px;letter-spacing:.12em;color:var(--gold);margin:28px 0 10px;font-weight:600}
+p{margin-bottom:16px;color:#D5D1C9}
+p.sub{color:var(--muted);font-size:15px}
+strong{color:var(--ink);font-weight:600}
+em{font-style:normal;color:var(--gold-l)}
+a{color:var(--gold-l)}
+ul,ol{margin:0 0 18px 22px}
+li{margin-bottom:9px;color:#D5D1C9}
+hr{border:0;border-top:1px solid var(--line);margin:40px 0}
+
+.pull{
+  font-family:var(--serif);font-size:clamp(22px,3.4vw,34px);line-height:1.6;
+  color:var(--gold-l);border-left:2px solid var(--gold);padding:6px 0 6px 28px;margin:36px 0;
+}
+.note{background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--gold-d);padding:22px 26px;margin:28px 0;font-size:15px}
+.note .h{font-size:12px;letter-spacing:.24em;color:var(--gold);margin-bottom:8px;text-transform:uppercase}
+.warn{border-left-color:var(--red)}
+.warn .h{color:var(--red)}
+
+/* ─── TABLE ─── */
+.tw{overflow-x:auto;margin:28px 0;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:640px}
+th{
+  background:var(--surface2);color:var(--gold);font-weight:600;text-align:left;
+  padding:14px 16px;letter-spacing:.1em;font-size:12px;border-bottom:1px solid var(--line);white-space:nowrap;
+}
+td{padding:14px 16px;border-bottom:1px solid var(--line);vertical-align:top;color:#D5D1C9;line-height:1.7}
+tr:last-child td{border-bottom:0}
+tbody tr:nth-child(odd){background:rgba(255,255,255,.012)}
+td.k{color:var(--ink);font-weight:600;white-space:nowrap}
+
+/* ─── CARDS ─── */
+.grid{display:grid;gap:18px;margin:28px 0}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);padding:26px}
+.card .n{font-family:var(--serif);font-size:34px;color:var(--gold-d);line-height:1;margin-bottom:12px}
+.card h5{font-family:var(--serif);font-size:19px;letter-spacing:.04em;margin-bottom:10px;color:var(--ink);font-weight:500}
+.card p{font-size:14.5px;color:var(--muted);margin:0}
+
+/* ─── 展櫃 (關卡) ─── */
+.case{background:linear-gradient(180deg,var(--surface) 0%,var(--bg2) 100%);border:1px solid var(--line);margin:22px 0;overflow:hidden}
+.case-h{display:flex;align-items:center;gap:18px;padding:20px 26px;border-bottom:1px solid var(--line);background:rgba(201,162,39,.045)}
+.case-h .idx{font-family:var(--serif);font-size:13px;letter-spacing:.2em;color:var(--gold);border:1px solid var(--gold-d);padding:5px 11px;flex-shrink:0}
+.case-h .who{font-family:var(--serif);font-size:22px;letter-spacing:.06em;color:var(--ink)}
+.case-h .fact{font-size:12.5px;color:var(--dim);margin-left:auto;text-align:right;line-height:1.5;max-width:44%}
+.case-b{padding:24px 26px}
+.row{display:flex;gap:14px;padding:11px 0;border-bottom:1px dashed rgba(42,47,56,.8);font-size:14.5px;align-items:flex-start}
+.row:last-child{border-bottom:0}
+.row .rk{flex:0 0 84px;font-size:11.5px;letter-spacing:.16em;color:var(--gold);padding-top:4px}
+.row .rv{flex:1;color:#D5D1C9;line-height:1.75}
+.line{font-family:var(--serif);font-size:17px;color:var(--gold-l);line-height:1.7}
+.opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.opt{border:1px solid var(--line);background:var(--surface2);padding:6px 13px;font-size:13px;color:#CFCBC3}
+.data{color:var(--green);font-weight:600}
+
+/* ─── FUNNEL ─── */
+.fun{margin:32px 0;border:1px solid var(--line)}
+.fs{display:flex;align-items:center;gap:20px;padding:15px 24px;border-bottom:1px solid var(--line)}
+.fs:last-child{border-bottom:0}
+.fs .bar{height:26px;background:linear-gradient(90deg,var(--gold-d),rgba(138,111,26,.15));flex-shrink:0;border-right:2px solid var(--gold)}
+.fs .fl{flex:0 0 128px;font-size:13px;color:var(--muted);letter-spacing:.06em}
+.fs .fn{font-family:var(--serif);font-size:20px;color:var(--ink);min-width:76px;text-align:right}
+.fs .fd{font-size:12.5px;color:var(--dim);flex:1}
+.fs.hot .fn{color:var(--gold-l)}
+.fs.hot .fd{color:var(--gold)}
+
+/* ─── TIMELINE ─── */
+.tl{border-left:1px solid var(--line);margin:28px 0 28px 8px;padding-left:0}
+.tl li{list-style:none;position:relative;padding:0 0 26px 30px;margin:0}
+.tl li::before{content:"";position:absolute;left:-4.5px;top:9px;width:8px;height:8px;background:var(--gold);border-radius:50%}
+.tl .th{font-family:var(--serif);font-size:18px;color:var(--ink);margin-bottom:5px;letter-spacing:.04em}
+.tl .tb{font-size:14px;color:var(--muted);line-height:1.75}
+.tl .tg{color:var(--green);font-size:13px;font-weight:600}
+
+/* ─── FOOT ─── */
+footer{padding:70px 0 90px;border-top:1px solid var(--line);color:var(--dim);font-size:13px;text-align:center;letter-spacing:.1em}
+
+@media(max-width:640px){
+  .wrap{padding:0 20px}
+  section{padding:66px 0}
+  .case-h{flex-wrap:wrap}
+  .case-h .fact{max-width:100%;margin-left:0;text-align:left}
+  .row{flex-direction:column;gap:4px}
+  .row .rk{flex:none}
+  .fs{flex-wrap:wrap;gap:10px}
+  .fs .fl{flex:0 0 100%}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ══════ COVER ══════ -->
+<div class="cover">
+  <div class="kicker">寶城人壽 ｜ VVIP 顧客資料收集互動企劃</div>
+  <h1>夜巡</h1>
+  <div class="en">The Night Watch</div>
+  <div class="lead">今夜十二點，<br>你是這座館的館長。<br>天亮之前，有一件國寶要找回來。</div>
+  <div class="meta">
+    <div>提案對象<b>寶城人壽</b></div>
+    <div>目標客群<b>VVIP 高資產客戶</b></div>
+    <div>核心目的<b>取得可承作的深度名單</b></div>
+    <div>最終產出<b>客戶專屬個人化影片</b></div>
+  </div>
+</div>
+
+<!-- ══════ 01 課題 ══════ -->
+<section id="s1">
+  <div class="tag"><span class="no">No. 01</span><span class="lbl">The Brief</span></div>
+  <h2>課題</h2>
+  <p>寶城人壽希望以遊戲化的方式，取得 VVIP 客戶的深度資料，並以「客戶本人的個人化影片」作為最終產出與交付物。</p>
+  <p>但這件事有一個必須先承認的難題——</p>
+
+  <div class="pull">這群人不填表格。<br>填表格是助理的工作，不是他的。</div>
+
+  <p>他們不缺獎品、不缺娛樂、不缺免費。抽獎與闖關對他們是負分——那意味著<strong>被當成一般消費者對待</strong>。任何超過兩分鐘、任何聞得出保險味的東西，會在第一屏就被關掉。</p>
+  <p>所以整份企劃真正要解的，不是「做一個好玩的遊戲」，而是：<strong>用什麼框架，能讓一位上市櫃老闆心甘情願、且誠實地，交出他的家庭結構、健康狀況與傳承意圖。</strong></p>
+</section>
+
+<!-- ══════ 02 受眾 ══════ -->
+<section id="s2">
+  <div class="tag"><span class="no">No. 02</span><span class="lbl">Audience</span></div>
+  <h2>受眾拆解</h2>
+  <p>VVIP 不是一種人，是四種。把他們混在同一個 campaign 裡，是這類專案最容易犯的錯。</p>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th></th><th>A・一代創業／傳產老闆</th><th>B・二代接班</th><th>C・專業高薪族</th><th>D・女性高資產</th></tr></thead>
+    <tbody>
+      <tr><td class="k">年齡</td><td>55–70</td><td>35–50</td><td>40–55</td><td>45–65</td></tr>
+      <tr><td class="k">致富路徑</td><td>白手起家。製造、貿易、營建、食品</td><td>繼承＋轉型</td><td>科技主管、醫師、律師、金融高管</td><td>企業主、掌財的老闆娘、繼承者</td></tr>
+      <tr><td class="k">真實興趣</td><td>高爾夫、宗教、命理、茶、養生、收藏、扶輪社與公會</td><td>威士忌、精品錶、重機、潛水、藝術、新創、EMBA</td><td>路跑健身、露營、攝影、音響、財報、子女教育</td><td>藝文表演、旅遊、養生醫美、茶道、公益、孫輩</td></tr>
+      <tr><td class="k">心裡真正的問題</td><td>「誰接？稅怎麼辦？我還能撐幾年？」</td><td>「我能不能超過我爸？」</td><td>「幾歲可以不用上班？小孩的錢夠嗎？」</td><td>「分得公不公平？家會不會散？」</td></tr>
+      <tr><td class="k">對保險的態度</td><td>極度防備，但一旦信任就全買</td><td>理性評估，會問報酬</td><td>自己會算，難說服</td><td>願意聽，但決策慢、要問人</td></tr>
+      <tr><td class="k">壽險價值</td><td><strong>保額最高、決策最快（一人說了算）</strong></td><td>高</td><td>數量最多、客單最低</td><td>高，且影響全家決策</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p class="sub">壽險 VVIP 的真正主力是 <strong>A ＋ B ＋ D</strong>。若只能命中一群，是 A。</p>
+
+  <h3>跨客群的共同心理：三個關鍵</h3>
+  <div class="grid g3">
+    <div class="card"><div class="n">01</div><h5>時間比錢貴</h5><p>超過兩分鐘的東西會被放棄。體驗必須自帶推進力，不能靠意志力撐完。</p></div>
+    <div class="card"><div class="n">02</div><h5>一輩子在拍板</h5><p>他們每天在做決定。<strong>被問問題是屈就，做裁決才是本分。</strong></p></div>
+    <div class="card"><div class="n">03</div><h5>不填問卷，但願意受診</h5><p>他們把生辰給命理師、把整本帳給會計師、在健檢中心脫光衣服——卻不肯把生日給保險公司。</p></div>
+  </div>
+
+  <div class="note">
+    <div class="h">關鍵洞察</div>
+    差別不在資料的敏感度，在<strong>框架</strong>。<br>
+    「問卷」＝ 你在調查我 → 防禦。<br>
+    「診斷／委任」＝ 你在幫我算一個我不知道的答案，或交給我一件事 → 配合，而且會盡量說實話。
+  </div>
+</section>
+
+<!-- ══════ 03 三個反轉 ══════ -->
+<section id="s3">
+  <div class="tag"><span class="no">No. 03</span><span class="lbl">Strategy</span></div>
+  <h2>三個反轉</h2>
+  <p>這是整份企劃的策略骨幹。機制若不反轉，換任何題材都拿不到完整資料。</p>
+
+  <div class="grid g2">
+    <div class="card">
+      <div class="n">01</div>
+      <h5>問卷 → 委任狀</h5>
+      <p>不是請他填資料，是<strong>正式委任他一項職務</strong>。館長對館藏負全責。有職務、有責任、有任期——他就會認真。</p>
+    </div>
+    <div class="card">
+      <div class="n">02</div>
+      <h5>完成度 → 破關</h5>
+      <p>不顯示「已完成 3/8」，顯示<strong>「線索 3/6・天亮還有三小時」</strong>。時限與任務是完成率的引擎，遠勝進度條。</p>
+    </div>
+    <div class="card">
+      <div class="n">03</div>
+      <h5>被問 → 他來裁決</h5>
+      <p>每一關不是題目，是一個文物的麻煩。<strong>他以為他在替別人斷案，其實他在寫自己的檔案。</strong></p>
+    </div>
+    <div class="card">
+      <div class="n">04</div>
+      <h5>一次拿完 → 三層漏斗</h5>
+      <p>不在一個流程裡要完所有資料。<strong>每一層用更好的產出，換更深的資料。</strong></p>
+    </div>
+  </div>
+
+  <div class="pull">好的資料收集，不是「你填得越多我拿越多」。<br>是「你不解決他的麻煩，就拿不到線索」。</div>
+</section>
+
+<!-- ══════ 04 概念 ══════ -->
+<section id="s4">
+  <div class="tag"><span class="no">No. 04</span><span class="lbl">The Concept</span></div>
+  <h2>《夜巡》</h2>
+  <div class="pull">今夜十二點，你是這座館的館長。<br>天亮之前，有一件國寶要找回來。</div>
+
+  <p>參考《博物館驚魂夜》《野蠻遊戲》《納尼亞傳奇》的敘事骨架，但把主角換成<strong>他自己</strong>——不是角色扮演、不是穿越成古人。他從頭到尾都是他，只是今晚不一樣。</p>
+
+  <div class="note">
+    <div class="h">為什麼代入感成立</div>
+    《博物館驚魂夜》的天才之處：Larry 從頭到尾就是那個不太行的中年男人。<strong>他沒變成別人，是世界變了。</strong><br>
+    代入感不來自「我扮演誰」，來自「我還是我，但今晚出事了」。
+  </div>
+
+  <h3>五個結構零件</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>零件</th><th>設定</th><th>作用</th></tr></thead>
+    <tbody>
+      <tr><td class="k">① 身分</td><td>他被<strong>正式委任</strong>為寶城典藏館第 087 任館長，任期一夜</td><td>有身分、有責任，不是打工的守衛</td></tr>
+      <tr><td class="k">② 祕密</td><td>十二點整，全館文物活過來——而且它們認得他</td><td>只有他知道，獨佔感</td></tr>
+      <tr><td class="k">③ 時限</td><td>清晨六點鐘響，全館石化歸位</td><td><strong>完成率的引擎</strong></td></tr>
+      <tr><td class="k">④ 事件</td><td>鎮館之寶「翠玉白菜」不見了。天亮前沒找回，它就永遠不在了</td><td>破關的樂趣來源</td></tr>
+      <tr><td class="k">⑤ 阻力</td><td>六件文物各有麻煩，他不處理，就拿不到線索</td><td><strong>每處理一個麻煩＝收一筆資料</strong></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ══════ 05 故事 ══════ -->
+<section id="s5">
+  <div class="tag"><span class="no">No. 05</span><span class="lbl">The Story</span></div>
+  <h2>故事設定</h2>
+
+  <h3>開場・委任狀</h3>
+  <div class="note">
+    <div class="h">寶城典藏館 ・ 館長委任狀</div>
+    茲委任 <strong>○○○</strong> 先生／女士<br>
+    為本館 <strong>第 087 任館長</strong><br>
+    任期：即日十二時起，至翌日六時止<br>
+    <span style="color:var(--muted)">館規第三條：館長對館藏負全責。</span>
+  </div>
+
+  <p>他推開一扇很日常的門——電梯門、地下停車場的鐵門、辦公室通往倉庫的那扇門。<strong>反差就是納尼亞的衣櫃。</strong></p>
+
+  <h4>就任第一題</h4>
+  <p>「按館規，新任館長就任時，須留一件自己的東西在館中。<strong>您留什麼？</strong>」<br>
+  <span class="sub">從一整面牆的物件裡選一件。這一題建立他在這個世界的身分、收第一筆性格資料，而<strong>這件東西會在結局回來找他</strong>。</span></p>
+
+  <h4>就任第二題（館規第三條）</h4>
+  <p>「館長對館藏負全責。萬一今夜有所損失，<strong>您希望怎麼處理？</strong>」<br>
+  <span class="opts"><span class="opt">我自己賠</span><span class="opt">全館共同分攤</span><span class="opt">早該先保起來</span></span><br>
+  <span class="sub">這是免責條款，也是<strong>風險偏好與對保險既有抗性的測驗</strong>——而且完全在故事邏輯裡。三個選項對應保險史上真實的三種風險處理方式。</span></p>
+
+  <h3>十二點・鐘響</h3>
+  <p>全館活過來。而且——<strong>它們認得他</strong>。因為他留下的那件東西，一直在跟大家講他的事。</p>
+
+  <h3>事件・鎮館之寶不見了</h3>
+  <p><strong>翠玉白菜不見了。</strong></p>
+  <p>六點鐘響，一切歸位石化。<strong>白菜沒回來，它就永遠不在了。</strong>而委任狀上寫著：館長對館藏負全責。</p>
+
+  <div class="note warn">
+    <div class="h">埋在故事裡的真相</div>
+    翠玉白菜上原本有兩隻蟲——<strong>螽斯與蝗蟲，寓意多子多孫</strong>（這是故宮的正式說明，真實文物設定）。<br><br>
+    昨夜，<strong>螽斯掉了下來。</strong><br>
+    白菜不是被偷。<strong>它是自己去找孩子了。</strong>
+  </div>
+  <p class="sub">六條線索拼起來，就是一個母親在找走失的孩子。而每一關問他的問題，問的都是他自己的傳承焦慮——<strong>文物的處境和他的處境，是同一件事。</strong></p>
+</section>
+
+<!-- ══════ 06 WORKFLOW ══════ -->
+<section id="s6">
+  <div class="tag"><span class="no">No. 06</span><span class="lbl">Workflow</span></div>
+  <h2>六道展櫃</h2>
+  <p>每一關：一個文物有麻煩 → 他裁決 → 拿到一條線索。線索是白菜的心情碎片。</p>
+
+  <div class="case">
+    <div class="case-h"><span class="idx">關 一</span><span class="who">乾隆</span><span class="fact">史上最出名的收藏家與蓋章狂，《快雪時晴帖》上留下大量鈐印題跋。清朝最長壽的皇帝，享年八十九。</span></div>
+    <div class="case-b">
+      <div class="row"><div class="rk">麻煩</div><div class="rv">他手上正拿著一幅王羲之，印泥已經沾好了。</div></div>
+      <div class="row"><div class="rk">他問</div><div class="rv"><span class="line">「我知道那顆白菜往哪去了。但你先幫我決定——這幅字，我蓋不蓋章？」</span></div></div>
+      <div class="row"><div class="rk">選項</div><div class="rv"><span class="opts"><span class="opt">蓋。我收的，就要留我的名字</span><span class="opt">不蓋。好東西不該有我的痕跡</span><span class="opt">蓋在背面</span></span></div></div>
+      <div class="row"><div class="rk">笑點</div><div class="rv">其他文物在旁邊集體尖叫「不要——！」</div></div>
+      <div class="row"><div class="rk">追問</div><div class="rv"><span class="line">「對了。朕活到八十九。<strong>你打算活到幾歲？上次體檢是什麼時候？</strong>」</span><br><span class="sub">全片唯一直接問健康的一題，由清朝最長壽的皇帝來問，最有資格、也最不像核保。</span></div></div>
+      <div class="row"><div class="rk">線索</div><div class="rv">「它往東邊去了。」</div></div>
+      <div class="row"><div class="rk">收到</div><div class="rv"><span class="data">留名慾望・對「擁有」的態度 → 傳承意圖與公益傾向</span>　＋　<span class="data">健康狀況與預期壽命想像（核保端最關鍵欄位）</span></div></div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-h"><span class="idx">關 二</span><span class="who">宋徽宗</span><span class="fact">史上最有藝術天分、最不會治國的皇帝。創瘦金體，靖康之變亡國被俘。</span></div>
+    <div class="case-b">
+      <div class="row"><div class="rk">麻煩</div><div class="rv">他在角落寫字，不肯抬頭，也不肯幫忙。</div></div>
+      <div class="row"><div class="rk">他問</div><div class="rv"><span class="line">「我把整個國家弄丟了，換來這幾張紙。你覺得我虧了嗎？」</span></div></div>
+      <div class="row"><div class="rk">選項</div><div class="rv"><span class="opts"><span class="opt">虧了</span><span class="opt">不虧</span><span class="opt">你根本沒得選</span></span></div></div>
+      <div class="row"><div class="rk">線索</div><div class="rv">「它在哭。」</div></div>
+      <div class="row"><div class="rk">收到</div><div class="rv"><span class="data">事業 vs 人生的根本權衡 → 價值觀主軸、溝通語氣定調</span></div></div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-h"><span class="idx">關 三</span><span class="who">蘇東坡</span><span class="fact">一生三度被貶——黃州、惠州、儋州，越貶越遠。每到一處就發明一道菜。</span></div>
+    <div class="case-b">
+      <div class="row"><div class="rk">麻煩</div><div class="rv">他知道線索。但他餓了。</div></div>
+      <div class="row"><div class="rk">他問</div><div class="rv"><span class="line">「先別問白菜。你這輩子最慘那一次，後來是吃了什麼緩過來的？」</span></div></div>
+      <div class="row"><div class="rk">線索</div><div class="rv">「它問我，青菜要怎麼煮才不會老。」</div></div>
+      <div class="row"><div class="rk">收到</div><div class="rv"><span class="data">逆境經驗・情感錨點・家的記憶</span></div></div>
+      <div class="row"><div class="rk">備註</div><div class="rv"><strong>這一題會讓老闆軟下來。而軟下來的人，後面的答案最誠實。</strong>分層點設在這一關之後。</div></div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-h"><span class="idx">關 四</span><span class="who">兵馬俑</span><span class="fact">秦始皇陵陪葬軍陣。</span></div>
+    <div class="case-b">
+      <div class="row"><div class="rk">麻煩</div><div class="rv">他們吵起來了。一排說要跟主帥一起走，一排說「我不想再當陪葬品」。兩邊互相推擠。</div></div>
+      <div class="row"><div class="rk">他斷</div><div class="rv"><span class="line">「一支軍隊，該跟著主帥走，還是留下來？」</span></div></div>
+      <div class="row"><div class="rk">線索</div><div class="rv">「它問我們，隊伍走散了要怎麼找回來。」</div></div>
+      <div class="row"><div class="rk">收到</div><div class="rv"><span class="data">接班觀・老臣的處置</span> —— 家族企業最痛的那一題，包在一場兩千年前的內鬨裡</div></div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-h"><span class="idx">關 五</span><span class="who">溥儀</span><span class="fact">最後一位皇帝。曾以「賞賜」之名，將大量宮中文物運出變賣。</span></div>
+    <div class="case-b">
+      <div class="row"><div class="rk">麻煩</div><div class="rv">沒人理他。他一個人坐在角落。</div></div>
+      <div class="row"><div class="rk">他問</div><div class="rv"><span class="line">「東西流出去那些年，我常想一件事。如果你的家業有一天要散——你希望它散在誰手上？」</span></div></div>
+      <div class="row"><div class="rk">線索</div><div class="rv">「它問我，東西流出去了，還找得回來嗎。」</div></div>
+      <div class="row"><div class="rk">收到</div><div class="rv"><span class="data">對失去的想像・最壞打算的準備程度</span> —— 直接命中壽險最核心的命題，而且問的人是溥儀，不是保險公司</div></div>
+      <div class="row"><div class="rk">紅線</div><div class="rv">台詞嚴格框在「失去」與「人」，不碰任何政治敘事。</div></div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-h"><span class="idx">關 六</span><span class="who">他留下的那件東西</span><span class="fact">就任時他自己選的。</span></div>
+    <div class="case-b">
+      <div class="row"><div class="rk">它問</div><div class="rv"><span class="line">「這麼多年了，我一直想問——你當初，為什麼要把我留在這裡？」</span></div></div>
+      <div class="row"><div class="rk">真相</div><div class="rv">「它身上那隻蟲，昨天掉下來了。<strong>它去找它了。</strong>」</div></div>
+      <div class="row"><div class="rk">收到</div><div class="rv"><span class="data">人生信條 → 影片結尾字卡 → 顧問的開場鑰匙</span></div></div>
+    </div>
+  </div>
+
+  <h3>真相前的最後一題</h3>
+  <div class="note">
+    <div class="h">情緒最高點</div>
+    <span class="line">「白菜身上原本有兩隻蟲。<br>館長——<strong>您身上有幾隻？</strong>」</span><br><br>
+    <span class="sub">剪影浮現，可加可減、可指定身分。這是<strong>家庭結構</strong>——全流程最動人、也最不像查戶口的一題。</span>
+  </div>
+
+  <h3>結局</h3>
+  <p>他在乾隆的印泥盒裡找到了螽斯——<strong>裡面暖和</strong>。白菜回來了，把螽斯接回身上，歸位、石化。</p>
+  <p>鐘響六下。委任狀上多了一行落款：</p>
+  <div class="note">
+    <div class="h">寶城典藏館 ・ 交接紀錄</div>
+    <strong>第 087 任館長 ○○○</strong><br>
+    任內館藏無失<br>
+    <span style="color:var(--muted)">附記：「（他寫的那句話）」</span>
+  </div>
+  <p>而他留在館裡的那件東西旁邊，多了一塊銘牌。</p>
+
+  <h3>資料總表</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>節點</th><th>包裝</th><th>實際取得</th><th>商業用途</th></tr></thead>
+    <tbody>
+      <tr><td class="k">就任 1</td><td>留一件東西在館裡</td><td>性格原型</td><td>溝通語氣定調</td></tr>
+      <tr><td class="k">就任 2</td><td>館規第三條・免責</td><td><strong>風險偏好・對保險的既有抗性</strong></td><td>顧問第一句話怎麼說</td></tr>
+      <tr><td class="k">關一</td><td>乾隆蓋不蓋章／朕活到八十九</td><td>留名慾望　＋　<strong>健康與體檢</strong></td><td>傳承商品分流・核保預判</td></tr>
+      <tr><td class="k">關二</td><td>宋徽宗虧不虧</td><td>事業 vs 人生的權衡</td><td>價值觀分眾</td></tr>
+      <tr><td class="k">關三</td><td>蘇東坡問你吃什麼</td><td>逆境經驗・情感錨點</td><td>破冰素材</td></tr>
+      <tr><td class="k">關四</td><td>軍隊跟不跟主帥走</td><td><strong>接班觀・老臣處置</strong></td><td>家族治理・信託切入點</td></tr>
+      <tr><td class="k">關五</td><td>家業要散，散在誰手上</td><td><strong>對失去的準備程度</strong></td><td>高保額壽險的核心切點</td></tr>
+      <tr><td class="k">真相前</td><td>您身上有幾隻蟲</td><td><strong>家庭結構</strong></td><td>受益人結構・保額試算</td></tr>
+      <tr><td class="k">落款</td><td>交接紀錄附記</td><td>人生信條</td><td>影片字卡・顧問開場</td></tr>
+      <tr><td class="k">交付</td><td>紀錄冊需謄抄七日</td><td><strong>姓名・手機・地址</strong></td><td>面訪機會</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note">
+    <div class="h">分層設計</div>
+    <strong>L1（約 60 秒）</strong>：委任狀 ＋ 就任兩題 ＋ 關一至關三 → 給「線索 3/6」與初步館長評等<br>
+    <strong>分層點</strong>：「天亮還有三小時。要繼續，還是就此交接？」——設在關三之後，情緒轉折點，續玩率最高<br>
+    <strong>L2（約 120 秒）</strong>：關四至關六 ＋ 家庭結構 ＋ 落款 → 完整交接紀錄與影片<br>
+    <strong>L3（線下）</strong>：實體紀錄冊由顧問親送
+  </div>
+</section>
+
+<!-- ══════ 07 影片 ══════ -->
+<section id="s7">
+  <div class="tag"><span class="no">No. 07</span><span class="lbl">The Film</span></div>
+  <h2>個人化影片產出</h2>
+  <p class="sub">約 50 秒。第一人稱。他從頭到尾都是他自己。</p>
+
+  <ul class="tl">
+    <li><div class="th">01　一扇很日常的門被推開</div><div class="tb">電梯門／鐵門。門後是深夜的館內。鐘敲十二下。</div></li>
+    <li><div class="th">02　全館甦醒</div><div class="tb">乾隆放下印泥、兵馬俑轉頭、宋徽宗抬眼。塵埃在展櫃燈裡浮動。</div></li>
+    <li><div class="th">03　館長站在中央</div><div class="tb"><strong>他的臉</strong>，油畫／雕塑質感，穿他自己的西裝。<span class="sub">不做寫實 AI 換臉——藝術化轉譯同時解決肖像權疑慮與恐怖谷。</span></div></li>
+    <li><div class="th">04　六個裁決快切</div><div class="tb">跟乾隆搶印泥、被兵馬俑包圍、陪蘇東坡找吃的。他選過的那一方發光、點頭、或不服氣地哼一聲。</div></li>
+    <li><div class="th">05　白菜回來了</div><div class="tb">它把螽斯接回身上。歸位。</div></li>
+    <li><div class="th">06　六點鐘響・全館石化</div><div class="tb">光線轉為晨白。一切靜止。</div></li>
+    <li><div class="th">07　交接紀錄浮現</div><div class="tb">「第 087 任館長 ○○○ ・ 任內館藏無失」＋ 他寫的那句話。</div></li>
+  </ul>
+
+  <h3>品牌收尾（最後五秒）</h3>
+  <div class="note">
+    1933 年起，這批文物被裝進一萬多個箱子，<br>
+    走過戰火、翻船、轟炸，行程逾萬里。<br><br>
+    <strong>幾乎一件都沒有少。</strong><br>
+    因為一路上，始終有人護著。<br><br>
+    <span style="font-family:var(--serif);font-size:22px;color:var(--gold-l)">有些東西，值得有人一路護著。</span><br>
+    <span style="color:var(--muted)">─ 寶城人壽</span>
+  </div>
+  <p class="sub">品牌只出現一次，在最後，帶著近百年的重量。<strong>上線前務必請法務／史料顧問核校數字，公開引用必須站得住腳。</strong></p>
+</section>
+
+<!-- ══════ 08 JOURNEY ══════ -->
+<section id="s8">
+  <div class="tag"><span class="no">No. 08</span><span class="lbl">Consumer Journey</span></div>
+  <h2>顧客旅程</h2>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>#</th><th>階段</th><th>場景</th><th>他的心理</th><th>我們做什麼</th><th>取得</th></tr></thead>
+    <tbody>
+      <tr><td class="k">1</td><td class="k">觸發</td><td>球敘後、藝廊、私銀貴賓室、家族與商會 LINE 群</td><td>防禦最高點</td><td><strong>實體委任狀</strong>（燙金、編號、封蠟）由顧問親手遞出</td><td>—</td></tr>
+      <tr><td class="k">2</td><td class="k">入口</td><td>手機</td><td>「這不像保險」</td><td>不設 landing page、不註冊、不把條款擋在前面。掃碼直接播</td><td>來源、推薦人</td></tr>
+      <tr><td class="k">3</td><td class="k">就任</td><td>30 秒</td><td>「我是館長？」</td><td>委任狀 ＋ 兩題就任程序</td><td>性格原型、<strong>風險偏好</strong></td></tr>
+      <tr><td class="k">4</td><td class="k">破關 L1</td><td>60 秒</td><td>「有點好玩」</td><td>關一至三。每關給即時社會證明：「同齡的館長，78% 選了另一邊」</td><td>健康、價值觀、逆境</td></tr>
+      <tr><td class="k">5</td><td class="k">分層</td><td>5 秒</td><td>投入已建立</td><td>「天亮還有三小時。要繼續嗎？」保留退出的自由</td><td>—</td></tr>
+      <tr><td class="k">6</td><td class="k">破關 L2</td><td>120 秒</td><td>「我要找回它」</td><td>關四至六 ＋ 家庭結構 ＋ 落款</td><td><strong>接班觀、家庭結構、信條</strong></td></tr>
+      <tr><td class="k">7</td><td class="k">交接</td><td>情緒高點</td><td>成就感</td><td>影片產出。<strong>紀錄冊需謄抄七日</strong>，先看預覽</td><td><strong>姓名、手機</strong></td></tr>
+      <tr><td class="k">8</td><td class="k">傳閱</td><td>當下</td><td>「這要給人看」</td><td>同時給一張<strong>交接紀錄卡</strong>（羊皮質感，列出他的六項裁決）：「這是我任內的紀錄。你的呢？」</td><td><strong>同溫層裂變</strong></td></tr>
+      <tr><td class="k">9</td><td class="k">交付</td><td>7 日後</td><td>「他們真的做了」</td><td>手工裝訂紀錄冊 ＋ 刻編號的黃銅館藏牌，<strong>顧問親送</strong>。NFC 掃描播放影片</td><td><strong>地址 ＋ 一次見面</strong></td></tr>
+      <tr><td class="k">10</td><td class="k">典藏</td><td>面談後</td><td>關係建立</td><td>顧問帶著交接紀錄解讀 → 自然帶到規劃。明年再任一次</td><td>需求確認、成交</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note">
+    <div class="h">為什麼是實體委任狀</div>
+    遞一個連結，他會忘記。<strong>遞一張燙金封蠟、寫著他名字與編號的委任狀，他會收下、會放在桌上、會被進辦公室的人問「這什麼？」</strong>——那就是下一輪的種子。<br>
+    同理，交付物是一本會放在辦公室的紀錄冊，不是一封 email。
+  </div>
+
+  <h3>漏斗模型</h3>
+  <div class="fun">
+    <div class="fs"><div class="fl">種子觸及</div><div class="bar" style="width:100%"></div><div class="fn">10,000</div><div class="fd">顧問面遞 2,000／高端場域 3,000／同溫層 5,000</div></div>
+    <div class="fs"><div class="fl">L1 完成</div><div class="bar" style="width:65%"></div><div class="fn">6,500</div><div class="fd">行為資料，尚無個資</div></div>
+    <div class="fs hot"><div class="fl">L2 完成</div><div class="bar" style="width:26%"></div><div class="fn">2,600</div><div class="fd">★ 含姓名手機的有效名單</div></div>
+    <div class="fs"><div class="fl">分享回流</div><div class="bar" style="width:30%"></div><div class="fn">+3,000</div><div class="fd">裂變係數 K≈0.5，且全數為同溫層</div></div>
+    <div class="fs hot"><div class="fl">願收紀錄冊</div><div class="bar" style="width:9%"></div><div class="fn">910</div><div class="fd">★ 含地址</div></div>
+    <div class="fs"><div class="fl">實際面談</div><div class="bar" style="width:4.5%"></div><div class="fn">455</div><div class="fd">顧問登門</div></div>
+    <div class="fs hot"><div class="fl">符合 VVIP 門檻</div><div class="bar" style="width:2%"></div><div class="fn">80</div><div class="fd">★ 可承作的目標名單</div></div>
+  </div>
+  <p class="sub"><strong>假設模型，非承諾值。</strong>各段轉換率須以寶城人壽自有的歷史基準校正。<br>核心結論：<strong>以 10,000 個種子換取 455 次登門面談與約 80 個可承作 VVIP</strong>，且 3,000 個回流觸及為零成本、且全為同溫層。</p>
+</section>
+
+<!-- ══════ 09 業務員 ══════ -->
+<section id="s9">
+  <div class="tag"><span class="no">No. 09</span><span class="lbl">Internal Track</span></div>
+  <h2>顧問副軌</h2>
+  <div class="pull">大部分保險數位活動失敗，<br>不是因為消費者不玩，是因為業務員不推。</div>
+  <p>這是一個 B2B2C 專案。<strong>第一個使用者是顧問，不是客戶。</strong></p>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>階段</th><th>做什麼</th><th>為什麼</th></tr></thead>
+    <tbody>
+      <tr><td class="k">① 他自己先任職</td><td>上線前，全體顧問先當一次館長，拿到自己的紀錄冊</td><td>他自己覺得好，才遞得出手。順便完成壓測</td></tr>
+      <tr><td class="k">② 專屬委任編號</td><td>每位顧問一組追蹤碼，發出的委任狀都帶號</td><td>這是他的名單，不是公司的 → 他有動機推</td></tr>
+      <tr><td class="k">③ 給「怎麼開口」</td><td>後台<strong>不丟原始欄位</strong>，丟翻譯過的建議：「此客戶接班焦慮高、對保險抗性中等。建議從家族治理切入，<strong>第一次見面不要提商品</strong>。破冰素材：他寫的信條是『⋯⋯』」</td><td><strong>這一條決定顧問會不會用第二次</strong></td></tr>
+      <tr><td class="k">④ 遞出的話術</td><td>不是「填個問卷」，是：「這給您。今晚十二點以後才能開。」</td><td>零推銷感的破冰工具</td></tr>
+      <tr><td class="k">⑤ 交付動作</td><td>紀錄冊由公司統一製作寄到顧問手上，<strong>由他親送</strong></td><td>把數位名單轉成實體見面的唯一機制</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ══════ 10 製作 ══════ -->
+<section id="s10">
+  <div class="tag"><span class="no">No. 10</span><span class="lbl">Production</span></div>
+  <h2>製作可行性</h2>
+  <p>「互動式影片」聽起來很貴，實際上不是。關鍵是<strong>用參數化影片模板，取代即時 AI 生成</strong>。</p>
+
+  <div class="tw">
+  <table>
+    <thead><tr><th>項目</th><th>規格</th></tr></thead>
+    <tbody>
+      <tr><td class="k">節點</td><td>就任 2 題 ＋ 六關 ＋ 家庭結構 ＋ 落款 ＝ 10 個節點</td></tr>
+      <tr><td class="k">時長</td><td>約 3 分鐘（L1 約 90 秒／L2 再 120 秒）</td></tr>
+      <tr><td class="k">分支邏輯</td><td><strong>完全線性。</strong>選項只累積參數，不改變關卡順序 → 不會分支爆炸</td></tr>
+      <tr><td class="k">素材總量</td><td><strong>約 18 段</strong>：開場 2 ＋ 六關各 1 段爭執鏡頭 ＝ 6 ＋ 通用後果鏡頭（換台詞）6 ＋ 真相 ＋ 結局 ＋ 品牌卡</td></tr>
+      <tr><td class="k">後果鏡頭省法</td><td>不為 18 種選擇各做一支。做一個通用的「被選中方發光＋其餘兩方反應」鏡頭，換台詞與角色即可</td></tr>
+      <tr><td class="k">結局影片</td><td>參數化模板：換臉、換留下的物件、換家庭人數、換落款字。<strong>預先製作 ＋ 即時合成</strong></td></tr>
+      <tr><td class="k">工程複雜度</td><td>接近一般互動網頁。狀態機是一張表，不是一棵樹</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note">
+    <div class="h">為什麼不做即時 AI 生成</div>
+    即時生成的品質不可控、臉部辨識度不穩、且無法預先審查台詞。<strong>對一個要交到 VVIP 手上的產出，這個風險不能承受。</strong>參數化模板讓每一幀都是事先審過的。
+  </div>
+</section>
+
+<!-- ══════ 11 風險 ══════ -->
+<section id="s11">
+  <div class="tag"><span class="no">No. 11</span><span class="lbl">Risk</span></div>
+  <h2>風險與待確認</h2>
+
+  <div class="grid g2">
+    <div class="card">
+      <h5>① 文物 IP 授權</h5>
+      <p>翠玉白菜、乾隆等具體標的涉及故宮品牌。<strong>兩條路：</strong>談授權合作（故宮有 IP 授權機制，這類文化企劃接受度不低，談成則品牌加分極大），或做架空的「寶城典藏館」、館藏採真實文物概念的變形。<strong>建議先探授權，備案是架空。</strong></p>
+    </div>
+    <div class="card">
+      <h5>② 政治敏感度</h5>
+      <p>文物南遷、溥儀等題材必須嚴格框在「守護」與「人的故事」，<strong>不碰任何政治敘事</strong>。溥儀關卡的台詞需逐句審。</p>
+    </div>
+    <div class="card">
+      <h5>③ 幽默的鐵律</h5>
+      <p>可以笑乾隆蓋章、笑宋徽宗、笑蘇東坡貪吃、笑兵馬俑內鬨——<strong>箭頭永遠指向文物，一次都不能指向他。</strong>老闆的自尊禁不起被一件文物嘲笑，那會毀掉整個轉化。</p>
+    </div>
+    <div class="card">
+      <h5>④ 肖像與隱私</h5>
+      <p>油畫轉譯，不做寫實 AI 換臉。明確承諾不留存原始照片、可一鍵刪除，<strong>並把這段放在上傳之前</strong>，不是藏在小字裡。這群人對此極度敏感——做好了反而是加分。</p>
+    </div>
+    <div class="card">
+      <h5>⑤ 保險法遵</h5>
+      <p>活動是否構成招攬行為、個資告知書形式、影片台詞不得有保證性用語。<strong>上線前須過法務。</strong></p>
+    </div>
+    <div class="card">
+      <h5>⑥ 史料核校</h5>
+      <p>乾隆享年、文物南遷數字、翠玉白菜寓意等公開引用，須請史料顧問核校後才可對外。</p>
+    </div>
+  </div>
+
+  <h3>需客戶決策</h3>
+  <div class="tw">
+  <table>
+    <thead><tr><th>題目</th><th>選項</th><th>建議</th></tr></thead>
+    <tbody>
+      <tr><td class="k">名單目標</td><td>量（5,000 中產）vs 質（100 真 VVIP）</td><td>質。設計已為質最佳化</td></tr>
+      <tr><td class="k">主推通路</td><td>顧問面遞 vs 公開報名</td><td>顧問面遞為主，實體委任狀是核心資產</td></tr>
+      <tr><td class="k">文物授權</td><td>談故宮 vs 架空典藏館</td><td>雙軌並行，先探授權</td></tr>
+      <tr><td class="k">影片產製</td><td>即時合成 vs 允許 7 日人工修</td><td>7 日。這正是實體交付與見面的理由</td></tr>
+      <tr><td class="k">專案性質</td><td>一次性 campaign vs 年度資產</td><td><strong>年度資產。</strong>「每年委任一位館長」的設定天生適合續作，館藏編號逐年累積</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ══════ 12 下一步 ══════ -->
+<section id="s12">
+  <div class="tag"><span class="no">No. 12</span><span class="lbl">Next</span></div>
+  <h2>下一步</h2>
+  <div class="grid g3">
+    <div class="card"><div class="n">01</div><h5>完整腳本</h5><p>六關全部角色台詞、每個選項的後果反應、後端資料欄位對應表。</p></div>
+    <div class="card"><div class="n">02</div><h5>18 段分鏡</h5><p>美術方向、視覺參考、生成 prompt，可直接發包。</p></div>
+    <div class="card"><div class="n">03</div><h5>視覺原型</h5><p>委任狀、交接紀錄卡、紀錄冊、館藏牌的實體設計。</p></div>
+  </div>
+</section>
+
+<footer>
+  夜巡 ・ THE NIGHT WATCH<br>
+  寶城人壽 VVIP 互動企劃 ・ 提案版本 v1.0
+</footer>
+
+</div>
+</body>
+</html>
