@@ -1,3 +1,14 @@
 .DS_Store
 build/
+build_end/
 *.zip
+
+# ── 個人照片與含本人肖像的產出：不進版控、不上公開 repo ──
+portrait_src.png
+assets/09_portrait.png
+cards/end_*.png
+cards/happy_curator.png
+夜巡_結局影片_館長版.mp4
+cards/happy_curator_bv.jpg
+clips/s7_happy.mp4
+夜巡_結局影片_HappyEnding.mp4

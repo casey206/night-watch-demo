@@ -6,24 +6,24 @@
 <title>夜巡 ・ 互動 Demo</title>
 <style>
 :root{
-  --bg:#08090B; --ink:#EDEAE3; --muted:#9A968E; --dim:#6A6660;
-  --gold:#C9A227; --gold-l:#E8CE78; --gold-d:#7E661A;
-  --line:rgba(201,162,39,.22); --panel:rgba(10,11,13,.82);
+  --bg:#060709;--ink:#EDEAE3;--muted:#9A968E;--dim:#6A6660;
+  --gold:#C9A227;--gold-l:#E8CE78;--gold-d:#7E661A;
+  --line:rgba(201,162,39,.22);
   --serif:"Noto Serif TC","Songti TC","Source Han Serif TC",serif;
   --sans:"PingFang TC","Noto Sans TC",-apple-system,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
-body{background:var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidden;letter-spacing:.03em}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);letter-spacing:.03em}
 
-#app{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#app{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;cursor:default}
 
-/* backdrop */
+/* ─── 背景 ─── */
 #bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;
-    transition:opacity 1.4s ease;transform:scale(1.06);animation:kb 26s ease-out infinite alternate}
-@keyframes kb{from{transform:scale(1.04) translate3d(0,0,0)}to{transform:scale(1.14) translate3d(-1.5%,-1%,0)}}
+    transition:opacity 1.5s ease;animation:kb 30s ease-out infinite alternate}
+@keyframes kb{from{transform:scale(1.05)}to{transform:scale(1.16) translate3d(-1.5%,-1%,0)}}
 #bg.on{opacity:.95}
-#vig{position:absolute;inset:0;pointer-events:none;transition:opacity .8s;
+#vig{position:absolute;inset:0;pointer-events:none;transition:opacity .9s;
   background:
     radial-gradient(62% 48% at 50% 52%,rgba(3,4,6,.86) 0%,rgba(3,4,6,.6) 44%,rgba(3,4,6,.12) 74%,transparent 88%),
     linear-gradient(180deg,rgba(3,4,6,.72) 0%,rgba(3,4,6,.1) 20%,transparent 40%),
@@ -34,651 +34,747 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);overflow:hidd
   animation:gr .6s steps(2) infinite}
 @keyframes gr{0%{transform:translate(0,0)}50%{transform:translate(-3%,2%)}100%{transform:translate(2%,-3%)}}
 
-/* HUD */
+/* ─── 第一人稱模式 ─── */
+#pov{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1s}
+#pov.on{opacity:1}
+#pov::before,#pov::after{content:"";position:absolute;left:0;right:0;height:9vh;background:#040507}
+#pov::before{top:0}#pov::after{bottom:0}
+body.pov #bg{animation:sway 9s ease-in-out infinite alternate}
+@keyframes sway{from{transform:scale(1.12) translate3d(-.7%,.3%,0)}to{transform:scale(1.15) translate3d(.7%,-.4%,0)}}
+.povtag{position:absolute;left:50%;transform:translateX(-50%);top:calc(9vh + 18px);
+  font-size:10px;letter-spacing:.45em;color:rgba(201,162,39,.55);z-index:30;opacity:0;transition:opacity 1s}
+.povtag.on{opacity:1}
+
+/* ─── HUD ─── */
 #hud{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;
-  padding:18px 26px;font-size:11px;letter-spacing:.28em;color:var(--dim);z-index:40;opacity:0;transition:opacity .8s}
+  padding:18px 26px;font-size:11px;letter-spacing:.26em;color:var(--dim);z-index:40;opacity:0;transition:opacity .8s}
 #hud.on{opacity:1}
-#hud b{color:var(--gold-l);font-weight:400;letter-spacing:.16em}
+#hud b{color:var(--gold-l);font-weight:400;letter-spacing:.14em}
 .clues{display:flex;gap:6px;align-items:center}
 .cd{width:7px;height:7px;border:1px solid var(--gold-d);transform:rotate(45deg)}
 .cd.f{background:var(--gold);box-shadow:0 0 9px rgba(201,162,39,.75)}
 
-/* stage */
-.stage{position:relative;z-index:20;width:min(860px,92vw);max-height:88vh;overflow-y:auto;padding:20px 0;
+/* ─── 舞台 ─── */
+.stage{position:relative;z-index:20;width:min(860px,92vw);max-height:86vh;overflow-y:auto;padding:16px 0;
   display:flex;flex-direction:column;align-items:center;text-align:center}
 .stage::-webkit-scrollbar{width:0}
-
-.spk{font-size:11px;letter-spacing:.42em;color:var(--gold);margin-bottom:22px;opacity:0;animation:fu .8s .1s forwards}
-.ln{font-family:var(--serif);font-size:clamp(19px,2.7vw,27px);line-height:1.95;margin-bottom:12px;
+.spk{font-size:11px;letter-spacing:.42em;color:var(--gold);margin-bottom:20px;opacity:0;animation:fu .8s .1s forwards}
+.ln{font-family:var(--serif);font-size:clamp(20px,2.9vw,29px);line-height:1.9;margin-bottom:10px;
   opacity:0;transform:translateY(9px);animation:fu .85s forwards;text-shadow:0 2px 26px rgba(0,0,0,.95)}
-.ln.q{color:var(--gold-l);margin-top:16px}
+.ln.q{color:var(--gold-l);margin-top:14px}
+.ln.sm{font-size:clamp(16px,2.1vw,20px);color:#BDB9B1}
 @keyframes fu{to{opacity:1;transform:none}}
-
-.tap{margin-top:26px;font-size:11px;letter-spacing:.3em;color:var(--dim);opacity:0;animation:bl 2.4s 1.1s infinite}
+.tap{margin-top:24px;font-size:11px;letter-spacing:.3em;color:var(--dim);opacity:0;animation:bl 2.4s 1.1s infinite}
 @keyframes bl{0%,100%{opacity:0}50%{opacity:.75}}
 
-.opts{width:100%;margin-top:30px;display:flex;flex-direction:column;gap:11px}
-.opt{border:1px solid var(--line);background:rgba(12,13,16,.62);backdrop-filter:blur(9px);
-  padding:17px 24px;font-size:15.5px;line-height:1.7;color:#DEDAD2;cursor:pointer;text-align:left;
+.opts{width:100%;margin-top:26px;display:flex;flex-direction:column;gap:10px}
+.opt{border:1px solid var(--line);background:rgba(10,11,14,.66);backdrop-filter:blur(9px);
+  padding:16px 22px;font-size:16px;line-height:1.6;color:#DEDAD2;cursor:pointer;text-align:left;
   transition:.28s;opacity:0;transform:translateY(11px);animation:fu .6s forwards}
 .opt:hover{border-color:var(--gold);background:rgba(201,162,39,.11);color:#fff;transform:translateX(5px)}
-.opt .oi{color:var(--gold);font-family:var(--serif);margin-right:13px;font-size:14px}
+.opt .oi{color:var(--gold);font-family:var(--serif);margin-right:12px;font-size:14px}
 
-/* chips */
-.chips{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-top:22px;width:100%}
-.chip{border:1px solid var(--line);padding:10px 18px;font-size:14px;cursor:pointer;transition:.22s;color:#CFCBC3;
-  background:rgba(12,13,16,.6)}
+.chips{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-top:20px;width:100%}
+.chip{border:1px solid var(--line);padding:10px 18px;font-size:14px;cursor:pointer;transition:.22s;color:#CFCBC3;background:rgba(10,11,14,.6)}
 .chip:hover{border-color:var(--gold)}
 .chip.sel{background:var(--gold);color:#0A0B0D;border-color:var(--gold);font-weight:600}
 
-/* stepper */
-.step{display:flex;align-items:center;gap:26px;margin-top:26px}
+.step{display:flex;align-items:center;gap:24px;margin-top:22px}
 .sbtn{width:46px;height:46px;border:1px solid var(--line);background:transparent;color:var(--gold);
   font-size:24px;cursor:pointer;font-family:var(--serif);transition:.22s}
 .sbtn:hover{border-color:var(--gold);background:rgba(201,162,39,.12)}
-.snum{font-family:var(--serif);font-size:52px;color:var(--gold-l);min-width:80px}
-.figs{display:flex;gap:10px;justify-content:center;margin-top:20px;min-height:56px;align-items:flex-end}
-.fig{width:17px;height:44px;background:linear-gradient(180deg,var(--gold-l),var(--gold-d));
+.snum{font-family:var(--serif);font-size:50px;color:var(--gold-l);min-width:76px}
+.figs{display:flex;gap:10px;justify-content:center;margin-top:16px;min-height:52px;align-items:flex-end}
+.fig{width:17px;height:42px;background:linear-gradient(180deg,var(--gold-l),var(--gold-d));
   border-radius:9px 9px 2px 2px;opacity:0;animation:fu .5s forwards;box-shadow:0 0 16px rgba(201,162,39,.45)}
 
-/* input */
 .inp{background:transparent;border:0;border-bottom:1px solid var(--gold-d);color:var(--gold-l);
   font-family:var(--serif);font-size:34px;text-align:center;width:170px;padding:6px 0;outline:none;letter-spacing:.2em}
 .inp::placeholder{color:rgba(201,162,39,.24)}
 .inp.wide{width:min(520px,80vw);font-size:20px;letter-spacing:.06em}
 
-.btn{margin-top:32px;border:1px solid var(--gold);background:transparent;color:var(--gold-l);
-  padding:14px 46px;font-size:13px;letter-spacing:.4em;cursor:pointer;transition:.28s;font-family:var(--sans)}
+.btn{margin-top:28px;border:1px solid var(--gold);background:transparent;color:var(--gold-l);
+  padding:14px 44px;font-size:13px;letter-spacing:.4em;cursor:pointer;transition:.28s;font-family:var(--sans)}
 .btn:hover{background:var(--gold);color:#0A0B0D}
-.btn.ghost{border-color:var(--line);color:var(--muted);letter-spacing:.2em;padding:12px 30px;font-size:12px}
-.btn.ghost:hover{background:transparent;border-color:var(--gold);color:var(--gold-l)}
+.btn.ghost{border-color:var(--line);color:var(--muted);letter-spacing:.2em;padding:12px 28px;font-size:12px}
+.btn.ghost:hover{border-color:var(--gold);color:var(--gold-l)}
 .brow{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
 
-/* 委任狀 */
+/* ─── 上傳 ─── */
+.drop{width:min(420px,86vw);border:1px dashed var(--gold-d);background:rgba(10,11,14,.6);
+  padding:38px 26px;cursor:pointer;transition:.3s;margin-top:8px}
+.drop:hover{border-color:var(--gold);background:rgba(201,162,39,.07)}
+.drop .ic{font-size:34px;color:var(--gold-d);margin-bottom:14px}
+.drop .t{font-size:14px;color:var(--muted);line-height:1.9}
+.pv{width:190px;height:190px;object-fit:cover;border:1px solid var(--gold);margin-top:8px;
+  box-shadow:0 20px 60px rgba(0,0,0,.8);filter:grayscale(.18) contrast(1.05)}
+
+/* ─── 委任狀 ─── */
 .env{width:min(430px,84vw);aspect-ratio:1.62;background:linear-gradient(160deg,#1A1C21,#0D0E11);
   border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:14px;cursor:pointer;transition:.5s;position:relative;box-shadow:0 40px 90px rgba(0,0,0,.85)}
+  gap:14px;cursor:pointer;transition:.5s;box-shadow:0 40px 90px rgba(0,0,0,.85)}
 .env:hover{transform:translateY(-7px);border-color:var(--gold)}
 .seal{width:62px;height:62px;border-radius:50%;background:radial-gradient(circle at 36% 30%,#C0392B,#7B1E14);
   display:flex;align-items:center;justify-content:center;font-family:var(--serif);color:#F3D9A0;font-size:24px;
   box-shadow:0 5px 20px rgba(0,0,0,.75),inset 0 -3px 9px rgba(0,0,0,.5)}
 .warrant{width:min(560px,90vw);border:1px solid var(--line);background:linear-gradient(170deg,rgba(24,26,31,.94),rgba(10,11,14,.97));
-  padding:44px 40px;text-align:center;box-shadow:0 40px 100px rgba(0,0,0,.9)}
+  padding:40px 36px;text-align:center;box-shadow:0 40px 100px rgba(0,0,0,.9)}
 .warrant .wt{font-family:var(--serif);font-size:15px;letter-spacing:.7em;color:var(--gold);margin-bottom:8px}
-.warrant .wh{font-family:var(--serif);font-size:29px;letter-spacing:.35em;margin-bottom:30px}
-.warrant .wl{font-family:var(--serif);font-size:16.5px;line-height:2.4;color:#D6D2CA}
-.rules{margin-top:28px;padding-top:22px;border-top:1px solid var(--line);font-size:12.5px;
-  line-height:2.2;color:var(--muted);text-align:left;letter-spacing:.08em}
+.warrant .wh{font-family:var(--serif);font-size:28px;letter-spacing:.35em;margin-bottom:26px}
+.warrant .wl{font-family:var(--serif);font-size:16.5px;line-height:2.3;color:#D6D2CA}
+.rules{margin-top:24px;padding-top:20px;border-top:1px solid var(--line);font-size:12.5px;
+  line-height:2.1;color:var(--muted);text-align:left;letter-spacing:.08em}
 .rules b{color:var(--gold);font-weight:400;margin-right:10px}
 
-/* 交接紀錄 */
+/* ─── 交接紀錄 ─── */
 .rec{width:min(560px,90vw);border:1px solid var(--line);background:linear-gradient(170deg,rgba(24,26,31,.95),rgba(10,11,14,.97));
-  padding:42px 40px;text-align:left;box-shadow:0 40px 100px rgba(0,0,0,.9)}
-.rec .rt{font-family:var(--serif);font-size:12px;letter-spacing:.5em;color:var(--gold);text-align:center;margin-bottom:26px}
-.rl{display:flex;padding:12px 0;border-bottom:1px solid rgba(201,162,39,.1);font-size:15px;align-items:baseline}
+  padding:38px 34px;text-align:left;box-shadow:0 40px 100px rgba(0,0,0,.9)}
+.rec .rt{font-family:var(--serif);font-size:12px;letter-spacing:.5em;color:var(--gold);text-align:center;margin-bottom:22px}
+.rl{display:flex;padding:11px 0;border-bottom:1px solid rgba(201,162,39,.1);font-size:15px;align-items:baseline}
 .rl:last-child{border:0}
-.rl .a{flex:0 0 96px;font-size:11.5px;letter-spacing:.24em;color:var(--dim)}
+.rl .a{flex:0 0 92px;font-size:11.5px;letter-spacing:.24em;color:var(--dim)}
 .rl .b{flex:1;font-family:var(--serif);font-size:17px;color:var(--ink)}
 .rl .b.gold{color:var(--gold-l)}
 
-/* backstage */
-.bs{width:100%;text-align:left;background:rgba(6,7,9,.94);border:1px solid var(--line);padding:34px 32px;
+/* ─── 生成中 ─── */
+.render{width:min(520px,88vw);text-align:center}
+.bar{height:2px;background:rgba(201,162,39,.18);margin-top:26px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--gold);box-shadow:0 0 12px var(--gold);transition:width .35s}
+.rlog{margin-top:20px;font-size:12.5px;letter-spacing:.16em;color:var(--dim);min-height:2.4em;line-height:1.9}
+
+/* ─── 影片 ─── */
+.film{width:min(920px,94vw)}
+.film video{width:100%;display:block;border:1px solid var(--line);background:#000;
+  box-shadow:0 40px 120px rgba(0,0,0,.9)}
+.filmcap{margin-top:16px;font-size:12px;letter-spacing:.26em;color:var(--gold);text-align:center}
+
+/* ─── 結果分析 ─── */
+.an{width:min(820px,94vw);text-align:left}
+.antype{text-align:center;margin-bottom:34px}
+.antype .k{font-size:11px;letter-spacing:.44em;color:var(--gold);margin-bottom:16px}
+.antype .t{font-family:var(--serif);font-size:clamp(40px,7vw,68px);letter-spacing:.14em;line-height:1.15}
+.antype .s{margin-top:14px;font-size:14px;color:var(--muted);letter-spacing:.1em}
+.bars{margin:30px 0}
+.brow2{display:flex;align-items:center;gap:16px;margin-bottom:13px}
+.brow2 .bl{flex:0 0 66px;font-size:12px;letter-spacing:.18em;color:var(--muted)}
+.brow2 .bt{flex:1;height:7px;background:rgba(201,162,39,.13);position:relative}
+.brow2 .bt i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,var(--gold-d),var(--gold-l));
+  transition:width 1.1s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 10px rgba(201,162,39,.5)}
+.brow2 .bv{flex:0 0 42px;text-align:right;font-family:var(--serif);font-size:17px;color:var(--gold-l)}
+.reads{border-top:1px solid rgba(201,162,39,.16);padding-top:24px}
+.read{display:flex;gap:16px;padding:13px 0;font-size:15px;line-height:1.85}
+.read .rk{flex:0 0 82px;font-size:11px;letter-spacing:.2em;color:var(--gold);padding-top:5px}
+.read .rv{flex:1;color:#D5D1C9}
+.read .rv em{color:var(--gold-l);font-style:normal}
+.cmp{margin-top:24px;padding:18px 22px;border:1px solid rgba(201,162,39,.2);background:rgba(201,162,39,.06);
+  font-size:14px;color:#CFCBC3;line-height:1.9}
+.cmp b{color:var(--gold-l);font-weight:600}
+
+/* ─── 後台 ─── */
+.bs{width:100%;text-align:left;background:rgba(6,7,9,.94);border:1px solid var(--line);padding:32px 30px;
     box-shadow:0 40px 100px rgba(0,0,0,.9)}
 .bsh{display:flex;align-items:baseline;gap:14px;margin-bottom:8px;flex-wrap:wrap}
-.bsh .t{font-family:var(--serif);font-size:26px;letter-spacing:.08em}
+.bsh .t{font-family:var(--serif);font-size:25px;letter-spacing:.08em}
 .bsh .s{font-size:11px;letter-spacing:.3em;color:var(--gold)}
-.bsub{font-size:13.5px;color:var(--muted);margin-bottom:26px;line-height:1.8}
+.bsub{font-size:13.5px;color:var(--muted);margin-bottom:24px;line-height:1.8}
 .tbl{border:1px solid var(--line);margin-bottom:22px;overflow:hidden}
 .trow{display:flex;border-bottom:1px solid rgba(201,162,39,.1);font-size:13.5px}
 .trow:last-child{border:0}
 .trow.h{background:rgba(201,162,39,.09);font-size:11px;letter-spacing:.2em;color:var(--gold)}
-.trow>div{padding:12px 15px;line-height:1.7}
-.c1{flex:0 0 120px;color:var(--dim);border-right:1px solid rgba(201,162,39,.1)}
+.trow>div{padding:11px 14px;line-height:1.7}
+.c1{flex:0 0 112px;color:var(--dim);border-right:1px solid rgba(201,162,39,.1)}
 .c2{flex:1.15;color:#D6D2CA;border-right:1px solid rgba(201,162,39,.1)}
 .c3{flex:1;color:var(--gold-l);font-weight:600}
-.brief{border:1px solid var(--gold-d);background:rgba(201,162,39,.07);padding:24px 26px;font-size:15px;line-height:2}
-.brief .bh{font-size:11px;letter-spacing:.3em;color:var(--gold);margin-bottom:14px}
+.brief{border:1px solid var(--gold-d);background:rgba(201,162,39,.07);padding:22px 24px;font-size:15px;line-height:2}
+.brief .bh{font-size:11px;letter-spacing:.3em;color:var(--gold);margin-bottom:12px}
 .brief em{color:var(--gold-l);font-style:normal}
 
-/* transitions */
+/* ─── 轉場 ─── */
 #flash{position:fixed;inset:0;background:#000;z-index:60;opacity:0;pointer-events:none;transition:opacity .55s}
 #flash.on{opacity:1;pointer-events:all}
-#chime{position:fixed;inset:0;z-index:55;display:none;align-items:center;justify-content:center;flex-direction:column;background:#050608}
+#chime{position:fixed;inset:0;z-index:55;display:none;align-items:center;justify-content:center;flex-direction:column;background:#040507}
 #chime.on{display:flex}
 #chime .ct{font-family:var(--serif);font-size:clamp(60px,15vw,150px);color:var(--gold);letter-spacing:.2em;
   text-shadow:0 0 70px rgba(201,162,39,.55)}
-#chime .cs{font-size:11px;letter-spacing:.55em;color:var(--dim);margin-top:22px}
+#chime .cs{font-size:11px;letter-spacing:.55em;color:var(--dim);margin-top:20px}
 .pulse{animation:pl 1s ease-out}
 @keyframes pl{0%{transform:scale(1);opacity:1}60%{transform:scale(1.1);opacity:.5}100%{transform:scale(1);opacity:1}}
 
-.note{font-size:12.5px;color:var(--dim);line-height:1.9;margin-top:20px;max-width:56ch}
+.note{font-size:12.5px;color:var(--dim);line-height:1.9;margin-top:18px;max-width:56ch}
+.skip{position:absolute;right:22px;bottom:18px;z-index:45;font-size:11px;letter-spacing:.26em;
+  color:rgba(154,150,142,.5);cursor:pointer;transition:.3s}
+.skip:hover{color:var(--gold-l)}
+
 @media(max-width:640px){
   .stage{width:94vw}
-  #hud{padding:12px 15px;font-size:10px;letter-spacing:.18em}
-  .warrant,.rec{padding:30px 22px}
-  .c1{flex:0 0 82px}
-  .trow{font-size:12.5px}
+  #hud{padding:12px 14px;font-size:10px;letter-spacing:.16em}
+  .warrant,.rec,.bs{padding:26px 20px}
+  .c1{flex:0 0 80px}.trow{font-size:12.5px}
+  .read .rk{flex:0 0 66px}
 }
 </style>
 </head>
 <body>
 <div id="app">
-  <div id="bg"></div><div id="vig"></div><div id="grain"></div>
+  <div id="bg"></div><div id="vig"></div><div id="grain"></div><div id="pov"></div>
+  <div class="povtag" id="povtag">第 一 人 稱</div>
   <div id="hud">
     <div>寶城典藏館 ・ 第 <b>087</b> 任館長</div>
     <div id="clock"></div>
     <div class="clues" id="clues"></div>
   </div>
   <div class="stage" id="stage"></div>
+  <div class="skip" id="skip" style="display:none">略過序章 →</div>
 </div>
 <div id="chime"><div class="ct" id="chimeT">十二</div><div class="cs" id="chimeS">MIDNIGHT</div></div>
 <div id="flash"></div>
 
 <script>
-/* ══════════════════════════════════════════════
-   夜巡 ・ 互動 Demo  —  寶城人壽 VVIP 企劃原型
-   ══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   夜巡 ・ 互動 Demo v2
+   沈浸式序章 → 上傳 → 委任 → 六關（無出口）→ 影片 → 結果分析
+   ══════════════════════════════════════════ */
 
-const S = { surname:'', relic:'', data:{}, clues:0, min:0, motto:'', family:0, roles:[] };
+const S={surname:'',photo:null,data:{},clues:0,min:0,motto:'',family:0,roles:[]};
+const el=id=>document.getElementById(id);
+const stage=el('stage'),bgEl=el('bg'),app=el('app');
 
-const el = id => document.getElementById(id);
-const stage = el('stage'), bgEl = el('bg'), app = el('app');
-/* 對白推進綁在整個畫面上，任何地方都點得到；選項/按鈕自行 stopPropagation */
-function setTap(fn){ app.onclick = fn; app.style.cursor = fn ? 'pointer' : 'default'; }
-
+function setTap(fn){app.onclick=fn;app.style.cursor=fn?'pointer':'default';}
 function setBg(src){
-  if(!src){ bgEl.classList.remove('on'); return; }
+  if(!src){bgEl.classList.remove('on');return;}
   bgEl.classList.remove('on');
-  setTimeout(()=>{ bgEl.style.backgroundImage = `url('${src}')`; bgEl.classList.add('on'); }, 120);
+  setTimeout(()=>{bgEl.style.backgroundImage=`url('${src}')`;bgEl.classList.add('on');},120);
 }
-function hud(on){ el('hud').classList.toggle('on', on); paintHud(); }
-function paintHud(){
-  const left = 360 - S.min;
-  el('clock').innerHTML = left>0
-    ? `天亮還有 <b>${Math.floor(left/60)}</b> 小時 <b>${String(left%60).padStart(2,'0')}</b> 分`
-    : `<b>六點</b>`;
-  el('clues').innerHTML = '<span style="margin-right:8px">線索</span>' +
+function pov(on){
+  document.body.classList.toggle('pov',on);
+  el('pov').classList.toggle('on',on);
+  el('povtag').classList.toggle('on',on);
+}
+function hud(on){el('hud').classList.toggle('on',on);paint();}
+function paint(){
+  const left=360-S.min;
+  el('clock').innerHTML=left>0
+    ?`天亮還有 <b>${Math.floor(left/60)}</b> 小時 <b>${String(left%60).padStart(2,'0')}</b> 分`
+    :`<b>六點</b>`;
+  el('clues').innerHTML='<span style="margin-right:8px">線索</span>'+
     Array.from({length:6},(_,i)=>`<span class="cd ${i<S.clues?'f':''}"></span>`).join('');
 }
-function fade(fn){
-  el('flash').classList.add('on');
-  setTimeout(()=>{ fn(); el('flash').classList.remove('on'); }, 560);
-}
-function chime(word, sub, times, then){
-  el('chimeT').textContent = word; el('chimeS').textContent = sub;
-  el('chime').classList.add('on');
-  let n=0;
-  const t = setInterval(()=>{
-    el('chimeT').classList.remove('pulse'); void el('chimeT').offsetWidth; el('chimeT').classList.add('pulse');
-    if(++n>=times){ clearInterval(t); setTimeout(()=>{ el('chime').classList.remove('on'); then(); }, 900); }
-  }, 520);
+function fade(fn){el('flash').classList.add('on');setTimeout(()=>{fn();el('flash').classList.remove('on');},560);}
+function chime(w,s,n,then){
+  el('chimeT').textContent=w;el('chimeS').textContent=s;el('chime').classList.add('on');
+  let i=0;const t=setInterval(()=>{
+    el('chimeT').classList.remove('pulse');void el('chimeT').offsetWidth;el('chimeT').classList.add('pulse');
+    if(++i>=n){clearInterval(t);setTimeout(()=>{el('chime').classList.remove('on');then();},900);}
+  },520);
 }
 
-/* ── 對白播放器 ── */
+/* ── 對白播放 ── */
 function play(o){
-  // o: {bg, spk, lines[], q, render()}
-  if(o.bg!==undefined) setBg(o.bg);
-  let i = 0;
-  const all = o.lines || [];
-  const still = 'animation:none;opacity:1;transform:none';
-  function draw(){
-    stage.innerHTML = (o.spk ? `<div class="spk" style="${still}">${o.spk}</div>` : '')
-      + all.slice(0,i+1).map((t,k)=>`<div class="ln" style="${k<i?still:''}">${t}</div>`).join('')
-      + (i < all.length-1 ? `<div class="tap">點擊繼續</div>` : '');
-    stage.scrollTop = stage.scrollHeight;
-  }
-  function next(){
-    if(i < all.length-1){ i++; draw(); }
-    else { setTap(null); o.render(); }
-  }
-  if(all.length){ setTap(next); draw(); }
-  else { setTap(null); o.render(); }
+  if(o.bg!==undefined)setBg(o.bg);
+  let i=0;const all=o.lines||[];
+  const still='animation:none;opacity:1;transform:none';
+  const draw=()=>{
+    stage.innerHTML=(o.spk?`<div class="spk" style="${still}">${o.spk}</div>`:'')
+      +all.slice(0,i+1).map((t,k)=>`<div class="ln ${o.sm?'sm':''}" style="${k<i?still:''}">${t}</div>`).join('')
+      +(i<all.length-1?`<div class="tap">點擊繼續</div>`:'');
+    stage.scrollTop=stage.scrollHeight;
+  };
+  const next=()=>{i<all.length-1?(i++,draw()):(setTap(null),o.render());};
+  all.length?(setTap(next),draw()):(setTap(null),o.render());
 }
-
-/* 在既有對白下方接上題目與選項 */
 function ask(o){
-  play({ bg:o.bg, spk:o.spk, lines:o.lines, render(){
-    stage.innerHTML = (o.spk?`<div class="spk">${o.spk}</div>`:'')
-      + (o.lines||[]).map(t=>`<div class="ln">${t}</div>`).join('')
-      + `<div class="ln q">${o.q}</div>`
-      + `<div class="opts">` + o.options.map((op,k)=>
-          `<div class="opt" data-k="${k}" style="animation-delay:${.12+k*.09}s"><span class="oi">${'一二三四五'[k]}</span>${op.t}</div>`
-        ).join('') + `</div>`;
-    stage.querySelectorAll('.opt').forEach(n=>n.onclick = e=>{
+  play({bg:o.bg,spk:o.spk,lines:o.lines,render(){
+    stage.innerHTML=(o.spk?`<div class="spk">${o.spk}</div>`:'')
+      +(o.lines||[]).map(t=>`<div class="ln">${t}</div>`).join('')
+      +`<div class="ln q">${o.q}</div>`
+      +`<div class="opts">`+o.options.map((p,k)=>
+        `<div class="opt" data-k="${k}" style="animation-delay:${.12+k*.09}s"><span class="oi">${'一二三四五'[k]}</span>${p.t}</div>`).join('')+`</div>`;
+    stage.querySelectorAll('.opt').forEach(n=>n.onclick=e=>{
       e.stopPropagation();
-      const op = o.options[+n.dataset.k];
-      if(o.key) S.data[o.key] = {q:o.label||o.q, a:op.t, field:op.field, val:op.val};
-      react(o, op);
+      const p=o.options[+n.dataset.k];
+      if(o.key)S.data[o.key]={a:p.t,field:p.field,val:p.val,score:p.score||{}};
+      react(o,p);
     });
   }});
 }
-function react(o, op){
-  S.min += (o.adv||0); paintHud();
-  const tail = [];
-  if(op.r) tail.push(`<div class="ln">${op.r}</div>`);
-  if(o.clue){ S.clues++; paintHud();
+function react(o,p){
+  S.min+=(o.adv||0);paint();
+  const tail=[];
+  if(p.r)tail.push(`<div class="ln">${p.r}</div>`);
+  if(o.clue){S.clues++;paint();
     tail.push(`<div class="ln q" style="animation-delay:.5s">「${o.clue}」</div>`);
-    tail.push(`<div class="spk" style="animation-delay:.9s;margin-top:20px">線索 ${S.clues} / 6</div>`); }
-  stage.innerHTML = (o.spk?`<div class="spk">${o.spk}</div>`:'') + tail.join('')
-    + `<div class="tap" style="animation-delay:1.3s">點擊繼續</div>`;
-  setTap(()=>{ setTap(null); fade(()=>go(o.next)); });
+    tail.push(`<div class="spk" style="animation-delay:.9s;margin-top:18px">線索 ${S.clues} / 6</div>`);}
+  stage.innerHTML=(o.spk?`<div class="spk">${o.spk}</div>`:'')+tail.join('')
+    +`<div class="tap" style="animation-delay:1.3s">點擊繼續</div>`;
+  setTap(()=>{setTap(null);fade(()=>go(o.next));});
 }
 
-/* ══════════ 場景 ══════════ */
-const SC = {};
+const SC={};
 
-/* 0 ─ 封緘的委任狀 */
-SC.boot = ()=>{
-  hud(false); setBg('');
-  stage.innerHTML = `
-    <div class="env" id="env">
-      <div class="spk" style="margin:0">寶 城 典 藏 館</div>
-      <div class="seal">寶</div>
-      <div style="font-size:12px;letter-spacing:.34em;color:var(--dim)">委 任 狀 ・ 第 087 號</div>
-      <div class="tap" style="margin-top:8px">點擊拆封</div>
-    </div>
-    <div class="note" style="text-align:center">互動 Demo ・ 完整體驗約 3 分鐘 ・ 所有選項皆可點</div>`;
-  el('env').onclick = ()=> fade(()=>go('warrant'));
+/* ══ 0 ─ 序章（沈浸式冷開場，自動推進）══ */
+SC.prologue=()=>{
+  hud(false);pov(true);
+  const BEATS=[
+    {bg:'assets/01_door.jpg', l:['這座館收藏的，','是歷代成事的人留下的東西。']},
+    {bg:'assets/06_warriors.jpg', l:['他們爭執了幾百年。','有些事，石頭斷不了。']},
+    {bg:'assets/03_qianlong.jpg', l:['所以每隔一段時間，','館裡要請一位在世的人。']},
+    {bg:'assets/02_vitrine.jpg', l:['當一夜的主人。','替他們裁決。']},
+    {bg:'assets/08_cabbage.jpg', l:['今年——','<span style="color:var(--gold-l)">輪到你。</span>']}
+  ];
+  el('skip').style.display='block';
+  el('skip').onclick=()=>{clearTimeout(timer);el('skip').style.display='none';pov(false);fade(()=>go('upload'));};
+  let i=0,timer;
+  const still='animation:none;opacity:1;transform:none';
+  const beat=()=>{
+    if(i>=BEATS.length){el('skip').style.display='none';pov(false);return fade(()=>go('upload'));}
+    const b=BEATS[i];setBg(b.bg);
+    stage.innerHTML=b.l.map((t,k)=>`<div class="ln" style="animation-delay:${.5+k*.9}s">${t}</div>`).join('');
+    i++;timer=setTimeout(beat,i===BEATS.length?3600:4200);
+  };
+  beat();
 };
 
-/* 1 ─ 委任狀 */
-SC.warrant = ()=>{
+/* ══ 1 ─ 上傳照片 ══ */
+SC.upload=()=>{
   setBg('assets/01_door.jpg');
-  stage.innerHTML = `
+  stage.innerHTML=`
+    <div class="spk">就 任 前</div>
+    <div class="ln">「館長的樣子，要留在紀錄裡。」</div>
+    <div class="ln q">給我一張你的照片。</div>
+    <div class="drop" id="drop">
+      <div class="ic">＋</div>
+      <div class="t">點此上傳一張正面照<br><span style="color:var(--dim);font-size:12.5px">影像只留在你的裝置上，不會上傳任何伺服器</span></div>
+    </div>
+    <input type="file" id="fi" accept="image/*" style="display:none">
+    <div class="brow"><button class="btn ghost" id="sk">先跳過</button></div>`;
+  el('drop').onclick=()=>el('fi').click();
+  el('sk').onclick=()=>fade(()=>go('warrant'));
+  el('fi').onchange=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();
+    r.onload=ev=>{
+      S.photo=ev.target.result;
+      stage.innerHTML=`
+        <div class="spk">就 任 前</div>
+        <img class="pv" src="${S.photo}" alt="">
+        <div class="ln q" style="margin-top:22px">很好。這張會被畫進去。</div>
+        <button class="btn" id="ok">繼　續</button>
+        <div class="brow" style="margin-top:10px"><button class="btn ghost" id="re">換一張</button></div>`;
+      el('ok').onclick=()=>fade(()=>go('warrant'));
+      el('re').onclick=()=>go('upload');
+    };
+    r.readAsDataURL(f);
+  };
+};
+
+/* ══ 2 ─ 委任狀 ══ */
+SC.warrant=()=>{
+  setBg('assets/01_door.jpg');
+  stage.innerHTML=`
     <div class="warrant">
       <div class="wt">寶 城 典 藏 館</div>
       <div class="wh">館長委任狀</div>
       <div class="wl">
         茲委任 &nbsp;<input class="inp" id="sn" maxlength="2" placeholder="姓氏">&nbsp; 先生／女士<br>
-        為本館第 087 任館長<br>
-        任期：即日十二時起，至翌日六時止
+        為本館第 087 任館長<br>任期：即日十二時起，至翌日六時止
       </div>
       <div class="rules">
         <b>一</b>館長對館藏負全責。<br>
         <b>二</b>夜間所見，不得對外言說。<br>
-        <b>三</b>天亮鐘響，一切歸位。
+        <b>三</b>入館之後，天亮之前不得離開。
       </div>
     </div>
     <button class="btn" id="go">就　任</button>`;
-  const sn = el('sn'); sn.focus();
-  el('go').onclick = ()=>{
-    S.surname = (sn.value.trim() || '陳');
-    fade(()=>go('relic'));
-  };
-  sn.onkeydown = e=>{ if(e.key==='Enter') el('go').click(); };
+  const sn=el('sn');sn.focus();
+  el('go').onclick=()=>{S.surname=(sn.value.trim()||'陳');fade(()=>go('relic'));};
+  sn.onkeydown=e=>{if(e.key==='Enter')el('go').click();};
 };
 
-/* 2 ─ 就任第一題：留一件東西 */
-SC.relic = ()=> ask({
-  bg:'assets/01_door.jpg', spk:'館務程序 ・ 其一', adv:0, key:'relic',
-  label:'就任時留在館中的物件',
-  lines:['「按館規，新任館長就任時，', '　須留一件自己的東西在館中。」'],
-  q:`「${S.surname}館長，您留什麼？」`,
+/* ══ 3 ─ 就任兩題 ══ */
+SC.relic=()=>ask({
+  bg:'assets/01_door.jpg',spk:'館 務 ・ 其 一',key:'relic',
+  lines:['「新館長要留一件自己的東西在館裡。」'],
+  q:`「${S.surname}館長，留什麼？」`,
   options:[
-    {t:'一支筆。簽下第一張合約的那支。', field:'性格原型', val:'開創型 ・ 自建事業', r:'它被收進了展櫃。玻璃上映出你的臉。'},
-    {t:'一只錶。父親留下來的。',           field:'性格原型', val:'承繼型 ・ 重家族連結', r:'它被收進了展櫃。秒針還在走。'},
-    {t:'一張全家福。',                     field:'性格原型', val:'守護型 ・ 家庭為重心', r:'它被收進了展櫃。相框有點舊了。'},
-    {t:'一把鑰匙。公司大門的。',           field:'性格原型', val:'掌權型 ・ 控制傾向高', r:'它被收進了展櫃。齒紋磨得很平。'}
-  ],
-  next:'rule3'
+    {t:'一支筆。簽第一張合約那支。',field:'性格原型',val:'開創型 ・ 自建事業',score:{決斷:2,遠見:1},r:'它被收進了櫃子。'},
+    {t:'一只錶。父親留的。',        field:'性格原型',val:'承繼型 ・ 重家族連結',score:{傳承:2,情感:1},r:'秒針還在走。'},
+    {t:'一張全家福。',              field:'性格原型',val:'守護型 ・ 家庭為重心',score:{情感:2,傳承:1},r:'相框有點舊了。'},
+    {t:'一把鑰匙。公司大門的。',    field:'性格原型',val:'掌權型 ・ 控制傾向高',score:{決斷:2,風險:1},r:'齒紋磨得很平。'}
+  ],next:'rule3'
+});
+SC.rule3=()=>ask({
+  bg:'assets/01_door.jpg',spk:'館 務 ・ 其 二',key:'risk',
+  lines:['「館長對館藏負全責。」'],
+  q:'「今夜若有損失，怎麼處理？」',
+  options:[
+    {t:'我自己賠。',        field:'風險態度',val:'自留風險 ・ 對保險抗性高',score:{決斷:2,風險:3},r:'「⋯⋯前面幾任也這麼說。」'},
+    {t:'全館共同分攤。',    field:'風險態度',val:'共同分攤 ・ 接受互助制度',score:{情感:2,風險:2},r:'「三千年前就有人這樣做了。」'},
+    {t:'早該先保起來。',    field:'風險態度',val:'事前移轉 ・ 對保險接受度高',score:{遠見:3,風險:1},r:'「可惜，今晚來不及了。」'}
+  ],next:'midnight'
 });
 
-/* 3 ─ 就任第二題：館規第三條（風險偏好） */
-SC.rule3 = ()=> ask({
-  bg:'assets/01_door.jpg', spk:'館務程序 ・ 其二', adv:0, key:'risk',
-  label:'館藏損失的處理方式（風險態度）',
-  lines:['「還有一項，需要您親自決定。」','「館規第一條——館長對館藏負全責。」'],
-  q:'「萬一今夜有所損失，您希望怎麼處理？」',
-  options:[
-    {t:'我自己賠。東西在我手上，就是我的事。', field:'風險態度', val:'自留風險 ・ 對保險抗性高', r:'「⋯⋯您跟前面幾任很像。」'},
-    {t:'全館共同分攤。大家都是館裡的人。',     field:'風險態度', val:'共同分攤 ・ 對互助制度接受', r:'「這是最古老的辦法。三千年前就有人這樣做。」'},
-    {t:'早該先保起來。這種事不能靠運氣。',     field:'風險態度', val:'事前移轉 ・ 對保險接受度高', r:'「⋯⋯可惜，今晚來不及了。」'}
-  ],
-  next:'midnight'
-});
+/* ══ 4 ─ 十二點 ══ */
+SC.midnight=()=>{hud(false);stage.innerHTML='';chime('十二','MIDNIGHT',3,()=>{S.min=0;hud(true);go('incident');});};
 
-/* 4 ─ 十二點 */
-SC.midnight = ()=>{
-  hud(false); stage.innerHTML='';
-  chime('十二','MIDNIGHT',3, ()=>{ S.min=0; hud(true); go('incident'); });
-};
-
-/* 5 ─ 事件 */
-SC.incident = ()=>{
-  play({ bg:'assets/02_vitrine.jpg', spk:'館内 ・ 零時',
-    lines:[
-      `「${S.surname}館長。」`,
-      '「中央展櫃⋯⋯空了。」',
-      '「<span style="color:var(--gold-l)">翠玉白菜不見了。</span>」',
-      '「六點鐘響，全館歸位、石化。」',
-      '「它沒回來，就永遠不在了。」',
-      '「您有六個小時。」'
-    ],
+/* ══ 5 ─ 事件（第一人稱）══ */
+SC.incident=()=>{
+  pov(true);
+  play({bg:'assets/02_vitrine.jpg',spk:'零 時 ・ 你 的 視 角',
+    lines:['你推開門。','館裡的東西都在動。',
+           '中央的櫃子——空的。',
+           '<span style="color:var(--gold-l)">翠玉白菜不見了。</span>',
+           '六點鐘響，一切歸位。','它沒回來，就永遠不在了。'],
     render(){
-      stage.innerHTML += `<button class="btn" id="s">開 始 尋 找</button>`;
-      el('s').onclick = e=>{ e.stopPropagation(); fade(()=>go('c1')); };
+      stage.innerHTML+=`<button class="btn" id="s">開 始 尋 找</button>
+      <div class="note" style="text-align:center">門在你身後關上了。</div>`;
+      el('s').onclick=e=>{e.stopPropagation();pov(false);fade(()=>go('c1'));};
     }});
 };
 
-/* 6 ─ 關一：乾隆（留名慾望） */
-SC.c1 = ()=> ask({
-  bg:'assets/03_qianlong.jpg', spk:'關 一 ・ 乾隆', adv:40, key:'seal',
-  label:'蓋不蓋章（留名慾望）',
-  lines:['「你就是新來的館長？」','「朕知道那顆白菜往哪去了。」','「不過你得先幫朕決定一件事——」'],
+/* ══ 6 ─ 六關 ══ */
+SC.c1=()=>ask({
+  bg:'assets/03_qianlong.jpg',spk:'關 一 ・ 乾 隆',adv:40,key:'seal',
+  lines:['「新來的？」','「朕知道白菜在哪。」','「先幫朕決定一件事。」'],
   q:'「這幅王羲之，朕蓋不蓋章？」',
   options:[
-    {t:'蓋。您收的，就該留下您的名字。', field:'留名慾望', val:'高 ・ 傾向具名傳承、冠名捐贈',
-     r:'「說得好！」<br><span style="color:var(--muted);font-size:.8em">（旁邊的青銅器發出一聲哀號。）</span>'},
-    {t:'不蓋。好東西不該有任何人的痕跡。', field:'留名慾望', val:'低 ・ 傾向匿名、資產保全優先',
-     r:'乾隆沉默了三秒。<br>「⋯⋯你這人很掃興。」'},
-    {t:'蓋在背面。留名，但不礙事。',       field:'留名慾望', val:'中 ・ 務實型，可接受信託架構',
-     r:'「圓滑。」<br>「朕喜歡。」'}
-  ],
-  next:'c1b'
+    {t:'蓋。您收的就該留名。',      field:'留名慾望',val:'高 ・ 傾向具名傳承、冠名捐贈',score:{傳承:3,決斷:1},
+     r:'「說得好！」<br><span style="color:var(--muted);font-size:.8em">（旁邊的青銅器發出哀號。）</span>'},
+    {t:'不蓋。好東西不該有痕跡。',  field:'留名慾望',val:'低 ・ 傾向匿名、資產保全優先',score:{遠見:2},
+     r:'沉默三秒。<br>「⋯⋯你這人很掃興。」'},
+    {t:'蓋背面。',                  field:'留名慾望',val:'中 ・ 務實型，可接受信託架構',score:{遠見:2,決斷:1},
+     r:'「圓滑。朕喜歡。」'}
+  ],next:'c1b'
 });
-
-/* 6b ─ 乾隆追問：健康 */
-SC.c1b = ()=> ask({
-  bg:'assets/03_qianlong.jpg', spk:'關 一 ・ 乾隆', adv:5, key:'health',
-  label:'健康與體檢（核保預判）',
-  lines:['「對了。」','「朕活到八十九。清朝最長的。」'],
-  q:'「你打算活到幾歲？上一次體檢，是什麼時候？」',
+SC.c1b=()=>ask({
+  bg:'assets/03_qianlong.jpg',spk:'關 一 ・ 乾 隆',adv:5,key:'health',
+  lines:['「朕活到八十九。」'],
+  q:'「你上次體檢是什麼時候？」',
   options:[
-    {t:'今年剛做完。我很在意這件事。',   field:'健康管理', val:'主動型 ・ 年度受檢，核保友善'},
-    {t:'兩三年前吧。一直說要去。',       field:'健康管理', val:'被動型 ・ 有拖延，建議健檢加值切入'},
-    {t:'不記得了。忙。',                 field:'健康管理', val:'忽略型 ・ 核保風險待評估'},
-    {t:'我盡量不去想這個。',             field:'健康管理', val:'迴避型 ・ 談健康需極謹慎'}
-  ],
-  clue:'它往東邊去了。',
-  next:'c2'
+    {t:'今年剛做。',      field:'健康管理',val:'主動型 ・ 年度受檢，核保友善',score:{遠見:2}},
+    {t:'兩三年前吧。',    field:'健康管理',val:'被動型 ・ 有拖延，建議健檢加值切入',score:{}},
+    {t:'忘了。忙。',      field:'健康管理',val:'忽略型 ・ 核保風險待評估',score:{決斷:1}},
+    {t:'不想想這個。',    field:'健康管理',val:'迴避型 ・ 談健康需極謹慎',score:{情感:1}}
+  ],clue:'它往東邊去了。',next:'pov2'
 });
 
-/* 7 ─ 關二：宋徽宗（事業 vs 人生） */
-SC.c2 = ()=> ask({
-  bg:'assets/04_huizong.jpg', spk:'關 二 ・ 宋徽宗', adv:45, key:'tradeoff',
-  label:'事業與人生的權衡',
-  lines:['「別問我。我幫不上忙。」','「我連自己的國家都弄丟了。」','「⋯⋯不過你倒是說說看。」'],
-  q:'「我把一整個天下弄丟了，換來這幾張紙。你覺得我虧了嗎？」',
-  options:[
-    {t:'虧了。江山比字重要。',                   field:'價值主軸', val:'事業優先 ・ 成就導向',
-     r:'他點點頭，繼續寫。<br>「大家都這麼說。」'},
-    {t:'不虧。你的字活到現在，你的江山沒有。',   field:'價值主軸', val:'意義優先 ・ 傳承導向',
-     r:'筆停住了。<br>「⋯⋯八百年了。你是第一個這樣講的。」'},
-    {t:'你根本沒得選。',                         field:'價值主軸', val:'宿命型 ・ 責任壓力大',
-     r:'他笑了一下，很輕。<br>「你也是吧。」'}
-  ],
-  clue:'它在哭。',
-  next:'c3'
-});
-
-/* 8 ─ 關三：蘇東坡（逆境與情感錨點） */
-SC.c3 = ()=> ask({
-  bg:'assets/05_dongpo.jpg', spk:'關 三 ・ 蘇東坡', adv:45, key:'adversity',
-  label:'逆境經驗與情感錨點',
-  lines:['「你來得正好，幫我拿一下那個鼎。」','「⋯⋯好啦好啦，我知道你在找白菜。」','「不過在那之前——」'],
-  q:'「你這輩子最慘的那一次，後來是吃了什麼緩過來的？」',
-  options:[
-    {t:'家裡的一鍋湯。',           field:'情感錨點', val:'家庭 ・ 破冰以家人切入', r:'「那就對了。」'},
-    {t:'一個人在攤子上吃的宵夜。', field:'情感錨點', val:'孤獨承擔 ・ 破冰勿觸家庭', r:'「一個人吃的最記得。」'},
-    {t:'我沒空吃。撐過去而已。',   field:'情感錨點', val:'壓抑型 ・ 需長期關係建立', r:'他看了你很久。<br>「那更慘。」'},
-    {t:'一頓跟人談成的飯。',       field:'情感錨點', val:'成就導向 ・ 破冰以事業切入', r:'「你們現代人啊。」'}
-  ],
-  clue:'它問我，青菜要怎麼煮才不會老。',
-  next:'gate'
-});
-
-/* 9 ─ 分層點 */
-SC.gate = ()=>{
-  play({ bg:'assets/02_vitrine.jpg', spk:'館内 ・ 三時',
-    lines:['「線索三條。天亮還有三個小時。」','「您可以繼續找。」','「也可以現在交接——紀錄上會寫『未竟』。」'],
-    render(){
-      stage.innerHTML += `<div class="brow" style="margin-top:30px">
-        <button class="btn" id="on">繼 續 尋 找</button>
-        <button class="btn ghost" id="off">就此交接</button></div>
-        <div class="note" style="text-align:center;margin-top:24px">
-          ↑ 這是企劃裡的 <b style="color:var(--gold-l)">L1 / L2 分層點</b>。<br>
-          設在情緒轉折之後，續玩率最高；同時保留退出的自由，反而更少人退出。</div>`;
-      el('on').onclick = e=>{ e.stopPropagation(); fade(()=>go('c4')); };
-      el('off').onclick = e=>{ e.stopPropagation(); fade(()=>go('early')); };
-    }});
+SC.pov2=()=>{
+  pov(true);
+  play({bg:'assets/04_huizong.jpg',spk:'你 的 視 角',sm:true,
+    lines:['你往東走。','走廊盡頭有人在寫字。','他沒有抬頭。'],
+    render(){pov(false);fade(()=>go('c2'));}});
 };
-SC.early = ()=>{
-  play({ bg:'assets/02_vitrine.jpg', spk:'交 接 ・ 未 竟',
-    lines:['「紀錄已封存。」','「第 087 任館長，任內館藏短少一件。」','「⋯⋯下次再來吧。」'],
+SC.c2=()=>ask({
+  bg:'assets/04_huizong.jpg',spk:'關 二 ・ 宋 徽 宗',adv:45,key:'tradeoff',
+  lines:['「別問我，我幫不上忙。」','「我連國家都弄丟了。」'],
+  q:'「我用一個天下換這幾張紙。虧嗎？」',
+  options:[
+    {t:'虧了。',                        field:'價值主軸',val:'事業優先 ・ 成就導向',score:{決斷:2},r:'他點點頭。「大家都這麼說。」'},
+    {t:'不虧。你的字還在，江山沒了。',  field:'價值主軸',val:'意義優先 ・ 傳承導向',score:{傳承:3,遠見:1},r:'筆停住了。<br>「⋯⋯八百年，你是第一個。」'},
+    {t:'你沒得選。',                    field:'價值主軸',val:'宿命型 ・ 責任壓力大',score:{情感:2},r:'他輕輕笑了。<br>「你也是吧。」'}
+  ],clue:'它在哭。',next:'pov3'
+});
+
+SC.pov3=()=>{
+  pov(true);
+  play({bg:'assets/05_dongpo.jpg',spk:'你 的 視 角',sm:true,
+    lines:['再往前。','有人蹲在展櫃邊上，','正在研究裡面能不能吃。'],
+    render(){pov(false);fade(()=>go('c3'));}});
+};
+SC.c3=()=>ask({
+  bg:'assets/05_dongpo.jpg',spk:'關 三 ・ 蘇 東 坡',adv:45,key:'adversity',
+  lines:['「幫我拿一下那個鼎。」','「⋯⋯好啦，我知道你在找白菜。」'],
+  q:'「你最慘那次，後來吃了什麼？」',
+  options:[
+    {t:'家裡的一鍋湯。',        field:'情感錨點',val:'家庭 ・ 破冰以家人切入',score:{情感:3},r:'「那就對了。」'},
+    {t:'一個人的宵夜。',        field:'情感錨點',val:'孤獨承擔 ・ 破冰勿觸家庭',score:{決斷:2},r:'「一個人吃的最記得。」'},
+    {t:'沒空吃。撐過去而已。',  field:'情感錨點',val:'壓抑型 ・ 需長期關係建立',score:{決斷:3},r:'他看了你很久。<br>「那更慘。」'},
+    {t:'談成的那頓飯。',        field:'情感錨點',val:'成就導向 ・ 破冰以事業切入',score:{決斷:2,遠見:1},r:'「你們現代人啊。」'}
+  ],clue:'它問我，青菜怎麼煮才不會老。',next:'push'
+});
+
+/* ── 沒有出口 ── */
+SC.push=()=>{
+  pov(true);
+  play({bg:'assets/02_vitrine.jpg',spk:'三 時',
+    lines:['線索三條。','天亮還有三個小時。','門是鎖著的。',
+           '<span style="color:var(--gold-l)">你沒有退路。</span>'],
     render(){
-      stage.innerHTML += `<div class="brow" style="margin-top:30px">
-        <button class="btn" id="b">回到分層點，繼續看完</button></div>
-        <div class="note" style="text-align:center;margin-top:22px">
-          提前退出者仍留下 L1 資料（性格原型、風險態度、健康、價值主軸、情感錨點），<br>
-          在漏斗模型中屬於「L1 完成」層。</div>`;
-      el('b').onclick = e=>{ e.stopPropagation(); S.min=135; fade(()=>go('gate')); };
+      stage.innerHTML+=`<button class="btn" id="on">繼 續 尋 找</button>`;
+      el('on').onclick=e=>{e.stopPropagation();pov(false);fade(()=>go('c4'));};
     }});
 };
 
-/* 10 ─ 關四：兵馬俑（接班觀） */
-SC.c4 = ()=> ask({
-  bg:'assets/06_warriors.jpg', spk:'關 四 ・ 兵馬俑', adv:45, key:'succession',
-  label:'接班觀與老臣處置',
-  lines:['「館長來得正好！您評評理！」',
-         '<span style="color:var(--muted);font-size:.85em">左排：「主帥走了，我們當然跟著走。這是規矩。」</span>',
-         '<span style="color:var(--muted);font-size:.85em">右排：「兩千年了。我不想再當陪葬品。」</span>'],
-  q:'「一支軍隊，該跟著主帥走，還是留下來？」',
+SC.c4=()=>ask({
+  bg:'assets/06_warriors.jpg',spk:'關 四 ・ 兵 馬 俑',adv:45,key:'succession',
+  lines:['「館長！您評評理！」',
+         '<span style="color:var(--muted);font-size:.85em">左排：「主帥走了就該跟著走。」</span>',
+         '<span style="color:var(--muted);font-size:.85em">右排：「兩千年了，我不想再陪葬。」</span>'],
+  q:'「軍隊該跟主帥走，還是留下？」',
   options:[
-    {t:'跟著走。規矩就是規矩。',         field:'接班觀', val:'忠誠優先 ・ 老臣共進退，家族治理需求高',
-     r:'左排歡呼。右排一句話都沒說。'},
-    {t:'留下來。人各有各的路。',         field:'接班觀', val:'能力優先 ・ 願意換血，適合股權規劃',
-     r:'右排鬆了一口氣。左排的隊長把頭轉開了。'},
-    {t:'讓他們自己選。',                 field:'接班觀', val:'授權型 ・ 迴避決策，接班尚未定案',
-     r:'兩排安靜下來。<br>「⋯⋯兩千年來沒人這樣講過。」'}
-  ],
-  clue:'它問我們，隊伍走散了要怎麼找回來。',
-  next:'c5'
+    {t:'跟著走。',          field:'接班觀',val:'忠誠優先 ・ 老臣共進退，家族治理需求高',score:{傳承:2,情感:2},r:'左排歡呼。右排一句話都沒說。'},
+    {t:'留下來。',          field:'接班觀',val:'能力優先 ・ 願意換血，適合股權規劃',score:{決斷:3,遠見:1},r:'右排鬆了口氣。左排隊長把頭轉開。'},
+    {t:'讓他們自己選。',    field:'接班觀',val:'授權型 ・ 迴避決策，接班尚未定案',score:{情感:1},r:'兩排安靜下來。<br>「⋯⋯兩千年沒人這樣講過。」'}
+  ],clue:'它問我們，隊伍走散了怎麼找回來。',next:'c5'
 });
-
-/* 11 ─ 關五：溥儀（對失去的準備） */
-SC.c5 = ()=> ask({
-  bg:'assets/07_puyi.jpg', spk:'關 五 ・ 溥儀', adv:45, key:'loss',
-  label:'對失去的想像與準備程度',
-  lines:['「⋯⋯你看得見我？」','「他們都不太理我。也是應該的。」','「那些年，東西一箱一箱從我手上流出去。」','「我常想一件事——」'],
-  q:'「如果你的家業有一天要散，你希望它散在誰手上？」',
+SC.c5=()=>ask({
+  bg:'assets/07_puyi.jpg',spk:'關 五 ・ 溥 儀',adv:45,key:'loss',
+  lines:['「⋯⋯你看得見我？」','「東西一箱一箱從我手上流出去。」'],
+  q:'「你的家業要散，你希望散在誰手上？」',
   options:[
-    {t:'我的孩子。就算他守不住。',       field:'傳承意圖', val:'血緣優先 ・ 高保額壽險 + 教育信託',
-     r:'「⋯⋯我父親也是這樣想的。」'},
-    {t:'守得住的人。姓不姓我的姓不重要。', field:'傳承意圖', val:'能力優先 ・ 股權信託、家族憲章',
-     r:'他抬起頭。「那你比我清醒。」'},
-    {t:'不會散。我已經安排好了。',        field:'傳承意圖', val:'已規劃 ・ 需檢視既有架構缺口',
-     r:'「⋯⋯每個人都這樣說。」'},
-    {t:'我沒想過。',                      field:'傳承意圖', val:'未啟動 ・ 最大切入空間',
-     r:'很長的沉默。<br>「那你要快一點。」'}
-  ],
-  clue:'它問我，東西流出去了，還找得回來嗎。',
-  next:'c6'
+    {t:'我的孩子。就算他守不住。',  field:'傳承意圖',val:'血緣優先 ・ 高保額壽險 + 教育信託',score:{傳承:3,情感:2},r:'「⋯⋯我父親也這樣想。」'},
+    {t:'守得住的人。',              field:'傳承意圖',val:'能力優先 ・ 股權信託、家族憲章',score:{遠見:3,決斷:2},r:'他抬起頭。「那你比我清醒。」'},
+    {t:'不會散。我安排好了。',      field:'傳承意圖',val:'已規劃 ・ 需檢視既有架構缺口',score:{遠見:3},r:'「⋯⋯每個人都這樣說。」'},
+    {t:'沒想過。',                  field:'傳承意圖',val:'未啟動 ・ 最大切入空間',score:{},r:'很長的沉默。<br>「那你要快一點。」'}
+  ],clue:'它問我，東西流出去還找得回來嗎。',next:'c6'
 });
-
-/* 12 ─ 關六：他留下的東西 */
-SC.c6 = ()=>{
-  const r = S.data.relic ? S.data.relic.a.replace(/。.*$/,'') : '你留下的東西';
-  ask({
-    bg:'assets/02_vitrine.jpg', spk:`關 六 ・ ${r}`, adv:40, key:'why',
-    label:'為什麼把它留在館裡（人生信條前導）',
-    lines:[`「${S.surname}館長。」`,'「這麼多年了，我一直想問——」'],
-    q:'「你當初，為什麼要把我留在這裡？」',
+SC.c6=()=>{
+  const r=S.data.relic?S.data.relic.a.replace(/。.*$/,''):'你留下的東西';
+  ask({bg:'assets/02_vitrine.jpg',spk:`關 六 ・ ${r}`,adv:40,key:'why',
+    lines:[`「${S.surname}館長。」`],
+    q:'「你當初為什麼把我留在這裡？」',
     options:[
-      {t:'因為它是我最好的一部分。',   field:'自我認同', val:'成就型'},
-      {t:'因為我怕自己忘記。',         field:'自我認同', val:'記憶型 ・ 情感需求高'},
-      {t:'因為總得留下點什麼。',       field:'自我認同', val:'傳承型'},
-      {t:'因為我想有人記得。',         field:'自我認同', val:'留名型'}
-    ],
-    clue:'它身上那隻蟲，昨天掉下來了。它去找它了。',
-    next:'truth'
-  });
+      {t:'它是我最好的一部分。',  field:'自我認同',val:'成就型',score:{決斷:2}},
+      {t:'我怕忘記。',            field:'自我認同',val:'記憶型 ・ 情感需求高',score:{情感:3}},
+      {t:'總得留下點什麼。',      field:'自我認同',val:'傳承型',score:{傳承:3}},
+      {t:'想有人記得。',          field:'自我認同',val:'留名型',score:{傳承:2,遠見:1}}
+    ],clue:'它身上那隻蟲昨天掉下來了。它去找它了。',next:'truth'});
 };
 
-/* 13 ─ 真相 */
-SC.truth = ()=>{
-  play({ bg:'assets/08_cabbage.jpg', spk:'真 相',
-    lines:['「你要找的東西，其實沒有被偷。」',
-           '「白菜身上原本有兩隻蟲。螽斯，和蝗蟲。」',
-           '<span style="color:var(--gold-l)">「寓意——多子多孫。」</span>',
-           '「昨天夜裡，那隻螽斯掉了下來。」',
-           '「它不是不見了。」',
-           '<span style="color:var(--gold-l)">「它是去找它的孩子了。」</span>'],
+SC.truth=()=>{
+  pov(true);
+  play({bg:'assets/08_cabbage.jpg',spk:'真 相',
+    lines:['白菜身上原本有兩隻蟲。','螽斯，和蝗蟲。',
+           '<span style="color:var(--gold-l)">寓意——多子多孫。</span>',
+           '昨夜，那隻螽斯掉了下來。','它不是不見了。',
+           '<span style="color:var(--gold-l)">它是去找它的孩子了。</span>'],
     render(){
-      stage.innerHTML += `<button class="btn" id="n">繼 續</button>`;
-      el('n').onclick = e=>{ e.stopPropagation(); fade(()=>go('family')); };
+      stage.innerHTML+=`<button class="btn" id="n">繼 續</button>`;
+      el('n').onclick=e=>{e.stopPropagation();pov(false);fade(()=>go('family'));};
     }});
 };
 
-/* 14 ─ 家庭結構 */
-SC.family = ()=>{
-  setBg('assets/08_cabbage.jpg');
-  S.family = 2; S.roles = [];
-  const ROLES = ['另一半','子女','父母','孫輩','沒有血緣但算家人的人'];
-  function draw(){
-    stage.innerHTML = `
+SC.family=()=>{
+  setBg('assets/08_cabbage.jpg');S.family=2;S.roles=[];
+  const R=['另一半','子女','父母','孫輩','沒有血緣但算家人的'];
+  const draw=()=>{
+    stage.innerHTML=`
       <div class="spk">最 後 一 問</div>
-      <div class="ln">「白菜身上原本有兩隻蟲。」</div>
       <div class="ln q">「${S.surname}館長——您身上有幾隻？」</div>
-      <div class="step">
-        <button class="sbtn" id="m">−</button>
-        <div class="snum">${S.family}</div>
-        <button class="sbtn" id="p">＋</button>
-      </div>
-      <div class="figs">${Array.from({length:S.family},(_,i)=>
-        `<div class="fig" style="animation-delay:${i*.07}s;height:${30+((i*13)%22)}px"></div>`).join('')}</div>
-      <div class="chips">${ROLES.map(r=>
-        `<div class="chip ${S.roles.includes(r)?'sel':''}" data-r="${r}">${r}</div>`).join('')}</div>
+      <div class="step"><button class="sbtn" id="m">−</button><div class="snum">${S.family}</div><button class="sbtn" id="p">＋</button></div>
+      <div class="figs">${Array.from({length:S.family},(_,i)=>`<div class="fig" style="animation-delay:${i*.07}s;height:${30+((i*13)%22)}px"></div>`).join('')}</div>
+      <div class="chips">${R.map(r=>`<div class="chip ${S.roles.includes(r)?'sel':''}" data-r="${r}">${r}</div>`).join('')}</div>
       <button class="btn" id="ok">確 認</button>`;
-    el('m').onclick = ()=>{ S.family = Math.max(0,S.family-1); draw(); };
-    el('p').onclick = ()=>{ S.family = Math.min(8,S.family+1); draw(); };
+    el('m').onclick=()=>{S.family=Math.max(0,S.family-1);draw();};
+    el('p').onclick=()=>{S.family=Math.min(8,S.family+1);draw();};
     stage.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
-      const r=c.dataset.r;
-      S.roles.includes(r) ? S.roles.splice(S.roles.indexOf(r),1) : S.roles.push(r);
-      draw();
-    });
-    el('ok').onclick = ()=>{
-      S.data.family = {q:'家庭結構（「您身上有幾隻蟲」）',
-        a:`${S.family} 人 ・ ${S.roles.join('、')||'未指定身分'}`,
-        field:'家庭結構', val:`受扶養／受益對象 ${S.family} 人`};
-      S.min = 300; paintHud(); fade(()=>go('motto'));
-    };
-  }
-  draw();
+      const r=c.dataset.r;S.roles.includes(r)?S.roles.splice(S.roles.indexOf(r),1):S.roles.push(r);draw();});
+    el('ok').onclick=()=>{
+      S.data.family={a:`${S.family} 人 ・ ${S.roles.join('、')||'未指定'}`,field:'家庭結構',
+        val:`受扶養／受益對象 ${S.family} 人`,score:{情感:Math.min(S.family,3),傳承:Math.min(S.family,2)}};
+      S.min=300;paint();fade(()=>go('motto'));};
+  };draw();
 };
 
-/* 15 ─ 落款 */
-SC.motto = ()=>{
+SC.motto=()=>{
   setBg('assets/08_cabbage.jpg');
-  const M = ['我沒有辜負交到我手上的東西。','我做的每一個決定，都想過下一代。',
-             '我來過。我盡力了。','這裡的東西，一件都沒少。'];
-  stage.innerHTML = `
+  const M=['我沒有辜負交到我手上的東西。','我做的每個決定，都想過下一代。','我來過。我盡力了。','這裡的東西，一件都沒少。'];
+  stage.innerHTML=`
     <div class="spk">交 接 紀 錄 ・ 附 記</div>
-    <div class="ln">「紀錄需要一句附記。」</div>
-    <div class="ln q">「三百年後有人翻到這一頁。您希望上面寫什麼？」</div>
-    <div class="opts">${M.map((m,k)=>
-      `<div class="opt" data-m="${m}" style="animation-delay:${.1+k*.08}s"><span class="oi">${'一二三四'[k]}</span>${m}</div>`).join('')}
-      <div class="opt" id="own" style="animation-delay:.45s"><span class="oi">五</span>⋯⋯我自己寫。</div>
-    </div>`;
-  stage.querySelectorAll('.opt[data-m]').forEach(n=>n.onclick=()=>{
-    S.motto = n.dataset.m; fade(()=>go('ending'));
-  });
-  el('own').onclick = ()=>{
-    stage.innerHTML = `<div class="spk">交 接 紀 錄 ・ 附 記</div>
-      <div class="ln q">請寫下您的那一句。</div>
-      <input class="inp wide" id="mi" maxlength="30" placeholder="⋯⋯">
-      <button class="btn" id="d">封 存</button>
-      <div class="note" style="text-align:center">開放自寫的資料價值最高——這是顧問手上最強的一張牌。</div>`;
+    <div class="ln q">「三百年後有人翻到這頁。要寫什麼？」</div>
+    <div class="opts">${M.map((m,k)=>`<div class="opt" data-m="${m}" style="animation-delay:${.1+k*.08}s"><span class="oi">${'一二三四'[k]}</span>${m}</div>`).join('')}
+      <div class="opt" id="own" style="animation-delay:.45s"><span class="oi">五</span>⋯⋯我自己寫。</div></div>`;
+  stage.querySelectorAll('.opt[data-m]').forEach(n=>n.onclick=()=>{S.motto=n.dataset.m;fade(()=>go('dawn'));});
+  el('own').onclick=()=>{
+    stage.innerHTML=`<div class="spk">附 記</div><div class="ln q">寫下你的那一句。</div>
+      <input class="inp wide" id="mi" maxlength="30" placeholder="⋯⋯"><button class="btn" id="d">封 存</button>`;
     el('mi').focus();
-    el('d').onclick = ()=>{ S.motto = el('mi').value.trim() || '⋯⋯'; fade(()=>go('ending')); };
-    el('mi').onkeydown = e=>{ if(e.key==='Enter') el('d').click(); };
-  };
+    el('d').onclick=()=>{S.motto=el('mi').value.trim()||'⋯⋯';fade(()=>go('dawn'));};
+    el('mi').onkeydown=e=>{if(e.key==='Enter')el('d').click();};};
 };
 
-/* 16 ─ 結局 */
-SC.ending = ()=>{
-  hud(false); stage.innerHTML='';
-  chime('六','DAWN',3, ()=>{
-    play({ bg:'assets/08_cabbage.jpg', spk:'六 時 ・ 歸 位',
-      lines:['您在乾隆的印泥盒裡找到了它。','裡面暖和。',
-             '白菜回來了。它把螽斯接回身上。','一切歸位、石化。','天亮了。'],
-      render(){
-        stage.innerHTML += `<button class="btn" id="n">查 看 交 接 紀 錄</button>`;
-        el('n').onclick = e=>{ e.stopPropagation(); fade(()=>go('record')); };
-      }});
-  });
+/* ══ 7 ─ 天亮 → 生成 → 影片 ══ */
+SC.dawn=()=>{
+  hud(false);stage.innerHTML='';
+  chime('六','DAWN',3,()=>go('render'));
 };
-
-/* 17 ─ 交接紀錄 + 實體交付 */
-SC.record = ()=>{
+SC.render=()=>{
   setBg('assets/08_cabbage.jpg');
-  stage.innerHTML = `
+  stage.innerHTML=`
+    <div class="render">
+      <div class="spk">交 接 紀 錄 ・ 影 像 封 存 中</div>
+      <div class="ln" style="font-size:22px">你在乾隆的印泥盒裡找到了它。</div>
+      <div class="ln" style="font-size:22px">裡面暖和。</div>
+      <div class="bar"><i id="pb"></i></div>
+      <div class="rlog" id="rl">正在讀取您的裁決紀錄⋯⋯</div>
+    </div>`;
+  const L=['正在讀取您的裁決紀錄⋯⋯','比對第 001–086 任館長檔案⋯⋯',
+           S.photo?'正在將您的形象繪入館藏⋯⋯':'正在繪製館長形象⋯⋯',
+           '生成交接影像⋯⋯','封存完成。'];
+  let i=0;
+  const t=setInterval(()=>{
+    i++;el('pb').style.width=Math.min(i*22,100)+'%';
+    el('rl').textContent=L[Math.min(i,L.length-1)];
+    if(i>=5){clearInterval(t);setTimeout(()=>fade(()=>go('film')),800);}
+  },900);
+};
+SC.film=()=>{
+  setBg('');
+  stage.innerHTML=`
+    <div class="film">
+      <video id="v" playsinline controls autoplay muted loop poster="assets/08_cabbage.jpg">
+        <source src="assets/ending_15s.mp4" type="video/mp4">
+      </video>
+      <div class="filmcap">第 087 任館長 ・ ${S.surname} 館長 ・ 交接影像</div>
+      <div class="filmcap" id="sound" style="color:var(--dim);cursor:pointer;letter-spacing:.2em;margin-top:8px">點 此 開 啟 聲 音</div>
+    </div>
+    <div class="brow" id="nx" style="opacity:0;transition:opacity 1.2s;pointer-events:none">
+      <button class="btn" id="n">查 看 結 果 分 析</button></div>
+    <div class="note" style="text-align:center">
+      正式版此處播放的是<b style="color:var(--gold-l)">以您上傳的照片生成的專屬影片</b>；<br>
+      本 Demo 使用示範素材。</div>`;
+  const v=el('v');
+  v.play().catch(()=>{});
+  el('sound').onclick=e=>{
+    e.stopPropagation();
+    v.muted=!v.muted;
+    el('sound').textContent=v.muted?'點 此 開 啟 聲 音':'聲 音 已 開 啟';
+    if(!v.paused)return; v.play().catch(()=>{});
+  };
+  // 讓觀眾先看完再給出口
+  setTimeout(()=>{const b=el('nx');if(b){b.style.opacity='1';b.style.pointerEvents='auto';}},9000);
+  el('n').onclick=()=>fade(()=>go('analysis'));
+};
+
+/* ══ 8 ─ 結果分析 ══ */
+const DIMS=['決斷','傳承','風險','情感','遠見'];
+function scores(){
+  const s={決斷:0,傳承:0,風險:0,情感:0,遠見:0};
+  Object.values(S.data).forEach(d=>{
+    if(d.score)for(const k in d.score)s[k]=(s[k]||0)+d.score[k];
+  });
+  const max=Math.max(...DIMS.map(k=>s[k]),1);
+  const pct={};DIMS.forEach(k=>pct[k]=Math.round(28+72*(s[k]/max)));
+  return{raw:s,pct};
+}
+function curatorType(s){
+  const top=DIMS.slice().sort((a,b)=>s.raw[b]-s.raw[a])[0];
+  return({
+    決斷:{t:'獨行的館長',s:'你自己扛。這座館交給你，最快。',
+      d:'你習慣一個人拍板，也習慣一個人承擔後果。這讓你走得快，但也讓身邊的人不知道怎麼接手。'},
+    傳承:{t:'留名的館長',s:'你在意的不是現在，是三百年後。',
+      d:'你做的每個決定都在想「這件事會怎麼被記得」。這是難得的長線思維——但要小心，被記得的方式需要提前安排，不會自己發生。'},
+    風險:{t:'扛下來的館長',s:'風險？那是我的事。',
+      d:'你傾向把不確定留在自己身上，不假手他人。這是強者的直覺，但強者也會有撐不住的那一天，而那天通常不會提前通知。'},
+    情感:{t:'守著人的館長',s:'東西是死的，人是活的。',
+      d:'你的每個選擇背後都有一張臉。你護的不是館藏，是館藏後面的那些人——這是最溫暖、也最需要被具體安排的一種責任。'},
+    遠見:{t:'布局的館長',s:'你早就想過今晚會發生什麼。',
+      d:'你不急著決定，因為你已經算過了。這種人少見——但再好的布局，也需要定期回頭檢查缺口。'}
+  })[top];
+}
+SC.analysis=()=>{
+  setBg('assets/08_cabbage.jpg');
+  const sc=scores(),ty=curatorType(sc);
+  const g=k=>S.data[k]?S.data[k].val:'';
+  const reads=[
+    ['傳承',(g('loss')||'').includes('未啟動')?'你還沒開始安排。這一題有 <em>63%</em> 的館長跟你一樣——差別在於，他們大多在三年內就開始了。'
+      :(g('loss')||'').includes('已規劃')?'你已經有安排。值得檢查的是：那份安排是幾年前做的？'
+      :'你心裡已經有人選了。剩下的問題是他知不知道。'],
+    ['接班',(g('succession')||'').includes('忠誠')?'你選擇讓老臣跟著走。這是義氣，也是成本。'
+      :(g('succession')||'').includes('能力')?'你選擇留下能守的人。清醒，但要準備好承受那些沒被留下的目光。'
+      :'你把決定交還給他們。這是尊重，也是還沒決定。'],
+    ['風險',(g('risk')||'').includes('抗性高')?'你說你自己賠。八十六任館長裡，有 <em>四位</em> 真的賠了。'
+      :(g('risk')||'').includes('互助')?'你選了最古老的那條——三千年前出海的人也是這樣分擔的。'
+      :'你選擇提前把不確定交出去。這一夜你本來可以睡得比較好。'],
+    ['身邊',`你說你身上有 <em>${S.family}</em> 隻蟲。白菜身上只有兩隻，它為了其中一隻走了一整夜。`]
+  ];
+  stage.innerHTML=`
+    <div class="an">
+      <div class="antype">
+        <div class="k">第 087 任館長 ・ 裁決分析</div>
+        <div class="t">${ty.t}</div>
+        <div class="s">${ty.s}</div>
+      </div>
+      <div class="bars">
+        ${DIMS.map(k=>`<div class="brow2"><div class="bl">${k}</div><div class="bt"><i data-w="${sc.pct[k]}"></i></div><div class="bv">${sc.pct[k]}</div></div>`).join('')}
+      </div>
+      <div class="reads">
+        <div class="read"><div class="rk">總 評</div><div class="rv">${ty.d}</div></div>
+        ${reads.map(([k,v])=>`<div class="read"><div class="rk">${k}</div><div class="rv">${v}</div></div>`).join('')}
+      </div>
+      <div class="cmp">
+        你的附記：「<b>${S.motto}</b>」<br>
+        這句話會刻在第 087 號展櫃的銘牌上，和前面八十六位館長並列。
+      </div>
+      <div class="brow" style="margin-top:30px;justify-content:flex-start">
+        <button class="btn" id="n">交 接 紀 錄</button>
+        <button class="btn ghost" id="b">顧問後台檢視 →</button>
+      </div>
+    </div>`;
+  setTimeout(()=>stage.querySelectorAll('.bt i').forEach(n=>n.style.width=n.dataset.w+'%'),120);
+  el('n').onclick=()=>fade(()=>go('record'));
+  el('b').onclick=()=>fade(()=>go('backstage'));
+};
+
+/* ══ 9 ─ 交接紀錄 ＋ 交付 ══ */
+SC.record=()=>{
+  setBg('assets/08_cabbage.jpg');
+  stage.innerHTML=`
     <div class="rec">
       <div class="rt">寶 城 典 藏 館 ・ 交 接 紀 錄</div>
       <div class="rl"><div class="a">任 期</div><div class="b">二〇二六年 ・ 一夜</div></div>
       <div class="rl"><div class="a">館 長</div><div class="b gold">第 087 任 ・ ${S.surname} 館長</div></div>
       <div class="rl"><div class="a">館 藏</div><div class="b gold">任內無失</div></div>
-      <div class="rl"><div class="a">留 存</div><div class="b">${S.data.relic ? S.data.relic.a : '—'}</div></div>
+      <div class="rl"><div class="a">留 存</div><div class="b">${S.data.relic?S.data.relic.a:'—'}</div></div>
       <div class="rl"><div class="a">附 記</div><div class="b gold">「${S.motto}」</div></div>
     </div>
-    <div class="ln" style="font-size:19px;margin-top:34px">「紀錄冊需謄抄七日。」</div>
-    <div class="ln q" style="font-size:19px">「留下地址，我們送到您手上。」</div>
-    <div class="brow" style="margin-top:26px">
+    <div class="ln q" style="font-size:19px;margin-top:28px">「紀錄冊需謄抄七日。留下地址。」</div>
+    <div class="brow" style="margin-top:20px">
       <button class="btn" id="f">留 下 聯 絡 方 式</button>
-      <button class="btn ghost" id="s">跳過，直接看後台</button></div>
-    <div class="note" style="text-align:center">
-      ↑ 這一步就是<b style="color:var(--gold-l)">把線上名單轉成線下面訪</b>的機制。<br>
-      影片不即時給、紀錄冊需要時間製作，才有正當理由要地址；<br>由顧問親送，就換到一次見面。</div>`;
-  el('f').onclick = ()=>{
-    stage.innerHTML = `
-      <div class="spk">實 體 交 付</div>
+      <button class="btn ghost" id="s">跳過，看後台</button></div>`;
+  el('f').onclick=()=>{
+    stage.innerHTML=`<div class="spk">實 體 交 付</div>
       <div class="ln q" style="font-size:20px">紀錄冊將由專屬顧問親送。</div>
-      <input class="inp wide" placeholder="姓名" style="margin-top:26px">
-      <input class="inp wide" placeholder="行動電話" style="margin-top:22px">
-      <input class="inp wide" placeholder="送達地址" style="margin-top:22px">
+      <input class="inp wide" placeholder="姓名" style="margin-top:24px">
+      <input class="inp wide" placeholder="行動電話" style="margin-top:20px">
+      <input class="inp wide" placeholder="送達地址" style="margin-top:20px">
       <button class="btn" id="d">送 出</button>
       <div class="note" style="text-align:center">Demo 不會送出任何資料。</div>`;
-    el('d').onclick = ()=> fade(()=>go('backstage'));
-  };
-  el('s').onclick = ()=> fade(()=>go('backstage'));
+    el('d').onclick=()=>fade(()=>go('backstage'));};
+  el('s').onclick=()=>fade(()=>go('backstage'));
 };
 
-/* 18 ─ 顧問後台（給客戶看的那一頁） */
-SC.backstage = ()=>{
-  setBg(''); hud(false);
-  const rows = Object.values(S.data).map(d=>
+/* ══ 10 ─ 顧問後台 ══ */
+SC.backstage=()=>{
+  setBg('');hud(false);
+  const rows=Object.values(S.data).map(d=>
     `<div class="trow"><div class="c1">${d.field}</div><div class="c2">${d.a}</div><div class="c3">${d.val}</div></div>`).join('');
-
-  const g = k => S.data[k] ? S.data[k].val : '';
-  const anx = g('loss').includes('未啟動')      ? '傳承尚未啟動——最大切入空間'
-            : g('succession').includes('迴避')  ? '接班尚未定案'
-            : g('health').includes('迴避')      ? '健康議題迴避，需最後再談'
-            : g('loss').includes('已規劃')      ? '已有既有架構，找缺口而非重做'
-            : '傳承與接班';
-  const open = (g('adversity')||'').includes('家庭') ? '從家人切入，先聊他提到的那鍋湯'
-             : (g('adversity')||'').includes('孤獨') ? '避開家庭話題，從他一個人撐過的那段切入'
-             : (g('adversity')||'').includes('壓抑') ? '不要急，這位需要兩到三次見面才會開口'
-             : '從事業成就切入，他習慣用結果溝通';
-  const prod = (g('loss')||'').includes('血緣') ? '高保額壽險 ＋ 教育金信託'
-             : (g('loss')||'').includes('能力') ? '股權信託 ＋ 家族憲章'
-             : (g('loss')||'').includes('已規劃') ? '既有架構健檢，找稅務與流動性缺口'
-             : '從最基本的保障缺口開始，不要一次講架構';
-  const resist = (g('risk')||'').includes('抗性高') ? '高——第一次見面完全不要提商品'
-               : (g('risk')||'').includes('互助') ? '中——可從共同分攤的概念自然帶入'
-               : '低——可較早進入規劃討論';
-
-  stage.innerHTML = `
+  const g=k=>S.data[k]?S.data[k].val:'';
+  const anx=g('loss').includes('未啟動')?'傳承尚未啟動——最大切入空間'
+    :g('succession').includes('迴避')?'接班尚未定案'
+    :g('health').includes('迴避')?'健康議題迴避，需最後再談'
+    :g('loss').includes('已規劃')?'已有既有架構，找缺口而非重做':'傳承與接班';
+  const open=(g('adversity')||'').includes('家庭')?'從家人切入，先聊他提到的那鍋湯'
+    :(g('adversity')||'').includes('孤獨')?'避開家庭話題，從他一個人撐過的那段切入'
+    :(g('adversity')||'').includes('壓抑')?'不要急，這位需要兩到三次見面才會開口'
+    :'從事業成就切入，他習慣用結果溝通';
+  const prod=(g('loss')||'').includes('血緣')?'高保額壽險 ＋ 教育金信託'
+    :(g('loss')||'').includes('能力')?'股權信託 ＋ 家族憲章'
+    :(g('loss')||'').includes('已規劃')?'既有架構健檢，找稅務與流動性缺口'
+    :'從最基本的保障缺口開始，不要一次講架構';
+  const resist=(g('risk')||'').includes('抗性高')?'高——第一次見面完全不要提商品'
+    :(g('risk')||'').includes('互助')?'中——可從共同分攤概念自然帶入':'低——可較早進入規劃討論';
+  stage.innerHTML=`
     <div class="bs">
       <div class="bsh"><span class="s">顧 問 後 台</span><span class="t">${S.surname}　客戶檔案</span>
         <span style="font-size:12px;color:var(--dim);margin-left:auto">第 087 號 ・ 一夜完成</span></div>
-      <div class="bsub">同一份體驗，客戶看到的是一個故事；顧問看到的是這一頁。<br>
+      <div class="bsub">同一份體驗，客戶看到的是故事與結果分析；顧問看到的是這一頁。<br>
         <b style="color:var(--gold-l)">客戶從頭到尾沒有填過一張表格。</b></div>
-
       <div class="tbl">
         <div class="trow h"><div class="c1">欄位</div><div class="c2">他在遊戲裡的回答</div><div class="c3">系統判讀</div></div>
         ${rows}
         <div class="trow"><div class="c1">人生信條</div><div class="c2">「${S.motto}」</div><div class="c3">親筆附記 ・ 破冰最強素材</div></div>
+        <div class="trow"><div class="c1">影像</div><div class="c2">${S.photo?'已上傳本人照片':'未上傳'}</div><div class="c3">${S.photo?'可生成專屬交接影片':'以預設形象產出'}</div></div>
       </div>
-
       <div class="brief">
         <div class="bh">系 統 建 議 ・ 首 次 接 觸</div>
         推銷抗性：<em>${resist}</em><br>
@@ -687,24 +783,19 @@ SC.backstage = ()=>{
         商品方向：<em>${prod}</em>。<br>
         可用破冰句：他親手寫下「<em>${S.motto}</em>」——見面時從這句開始。
       </div>
-
-      <div class="note" style="margin-top:26px">
+      <div class="note" style="margin-top:24px">
         後台<b style="color:var(--gold-l)">不丟原始欄位給業務員，只丟「怎麼開口」</b>。<br>
-        這一條決定顧問會不會用第二次——也是多數保險數位活動失敗的真正原因。
-      </div>
-
-      <div class="brow" style="margin-top:34px;justify-content:flex-start">
-        <button class="btn" id="r">重 新 體 驗</button>
-      </div>
+        這一條決定顧問會不會用第二次——也是多數保險數位活動失敗的真正原因。</div>
+      <div class="brow" style="margin-top:30px;justify-content:flex-start">
+        <button class="btn" id="r">重 新 體 驗</button></div>
     </div>`;
-  el('r').onclick = ()=>{
-    S.data={}; S.clues=0; S.min=0; S.motto=''; S.family=0; S.roles=[];
-    fade(()=>go('boot'));
-  };
+  el('r').onclick=()=>{
+    S.data={};S.clues=0;S.min=0;S.motto='';S.family=0;S.roles=[];S.photo=null;
+    fade(()=>go('prologue'));};
 };
 
-function go(id){ setTap(null); stage.onclick=null; SC[id](); }
-go('boot');
+function go(id){setTap(null);stage.onclick=null;SC[id]();}
+go('prologue');
 </script>
 </body>
 </html>
