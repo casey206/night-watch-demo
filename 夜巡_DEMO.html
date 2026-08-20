@@ -332,7 +332,7 @@ const S={
   name:'',sur:'',birth:1976,age:50,photo:null,
   marital:'',career:'',relic:'',risk:'',
   pos:0,lap:0,time:360,marks:0,visited:{},
-  flags:{},data:{},changed:[],rolls:[],
+  flags:{},data:{},changed:[],newRelics:[],rolls:[],
   ax:{事業:0,家庭:0,傳承:0},
   dim:{決斷:0,傳承:0,風險:0,情感:0,遠見:0},
   last:null,family:0,roles:[],motto:''
@@ -396,25 +396,21 @@ function check(c,then){
   el('cl').textContent=`判 定 ・ ${c.stat} ${c.dc}`;
   el('cv').className='cverdict';el('cv').textContent='';el('cm').innerHTML='';el('ct').style.display='none';
   const cube=el('ccube');buildCube(cube);
-  const d1=1+Math.floor(Math.random()*6),d2=1+Math.floor(Math.random()*6),d3=1+Math.floor(Math.random()*6);
   const rb=RELIC_BONUS[S.relic]||['',0];
-  const bonus=rb[0]===c.stat?rb[1]:0;
-  const total=d1+d2+d3+bonus;
-  tumble(cube,d1,()=>{
-    el('cm').innerHTML=`第一顆 <b>${d1}</b>`;
-    tumble(cube,d2,()=>{
-      el('cm').innerHTML=`<b>${d1}</b> ＋ <b>${d2}</b>`;
-      tumble(cube,d3,()=>{
-        const ok=total>=c.dc;
-        el('cm').innerHTML=`<b>${d1}</b> ＋ <b>${d2}</b> ＋ <b>${d3}</b>${bonus?` ＋ 隨身之物 <b>${bonus}</b>`:''} ＝ <b>${total}</b>　${ok?'≥':'＜'}　${c.dc}`;
-        setTimeout(()=>{
-          const v=el('cv');v.textContent=ok?'成 功':'失 敗';v.classList.add(ok?'ok':'no','show');
-          el('ct').style.display='block';
-          S.rolls.push({stat:c.stat,dc:c.dc,total,ok});
-          box.onclick=()=>{box.classList.remove('on');box.onclick=null;then(ok);};
-        },520);
-      });
-    });
+  const bonus=rb[0]===c.stat?1:0;
+  const roll=1+Math.floor(Math.random()*6);
+  const total=roll+bonus;
+  tumble(cube,roll,()=>{
+    const ok=total>=c.dc;
+    el('cm').innerHTML=bonus
+      ? `擲出 <b>${roll}</b> ＋ 隨身之物 <b>1</b> ＝ <b>${total}</b>　${ok?'≥':'＜'}　${c.dc}`
+      : `擲出 <b>${roll}</b>　${ok?'≥':'＜'}　${c.dc}`;
+    setTimeout(()=>{
+      const v=el('cv');v.textContent=ok?'成 功':'失 敗';v.classList.add(ok?'ok':'no','show');
+      el('ct').style.display='block';
+      S.rolls.push({stat:c.stat,dc:c.dc,total,ok});
+      box.onclick=()=>{box.classList.remove('on');box.onclick=null;then(ok);};
+    },480);
   });
 }
 
@@ -474,6 +470,7 @@ function ask(o){
           if(!ok&&r.penalty)spend(r.penalty);
           if(ok&&p.changed){
             S.changed.push(p.changed);
+            if(p.newRelic)S.newRelics.push(p.newRelic);
             rewrite(p.changed,()=>apply(r.note||p.note,(r.tags||p.tags)));
             return;
           }
@@ -717,10 +714,23 @@ function relicTile(R){
       spend(20);afterTile(true);
     }});
 }
-/* 歷史格 */
+/* 歷史格：① 改寫歷史 → ② 那個時代反問你的人生 */
 function historyTile(H){
   ask({bg:H.bg,spk:`歷 史 節 點 ・ ${H.title}`,era:H.era,lines:H.intro,q:H.q,opts:H.opts,
-    done(){spend(25);afterTile(true);}});
+    done(){
+      spend(20);
+      if(!H.mirror)return afterTile(true);
+      // 過場：先看見剛才那一下的後果，再被反問
+      const note=S.last&&S.last.note?`<div class="ln" style="${still}">${S.last.note}</div>`:'';
+      stage.innerHTML=note+`<div class="tap">點擊繼續</div>`;
+      setTap(()=>{setTap(null);fade(()=>mirrorTile(H));});
+    }});
+}
+function mirrorTile(H){
+  const M=H.mirror;
+  ask({bg:H.bg,spk:`${H.era} ・ ${M.who}`,lines:M.lines,q:M.q,
+    field:M.field,key:M.key,opts:M.opts,
+    done(){spend(15);afterTile(true);}});
 }
 /* 危機格 */
 function crisisTile(C){
@@ -910,8 +920,8 @@ SC.analysis=()=>{
       <div class="antype"><div class="k">第 087 任館長 ・ 裁決分析</div>
         <div class="t">${TY[0]}</div><div class="s">${TY[1]}</div></div>
       <div class="bars">${D.map(k=>`<div class="brow2"><div class="bl">${k}</div><div class="bt"><i data-w="${pct[k]}"></i></div><div class="bv">${pct[k]}</div></div>`).join('')}</div>
-      ${S.changed.length?`<div class="hist"><div class="hh">你 改 寫 的 歷 史</div>
-        ${S.changed.map(c=>`<div class="hi">${c}</div>`).join('')}</div>`:''}
+      ${S.changed.length?`<div class="hist"><div class="hh">因 你 而 存 在 的 館 藏</div>
+        ${S.changed.map((c,i)=>`<div class="hi">${c}${S.newRelics[i]?`<br><span style="font-size:13px;color:var(--jade);opacity:.8">→ 館藏增列：${S.newRelics[i]}</span>`:''}</div>`).join('')}</div>`:''}
       <div class="achv">${achievements().map(([t,d])=>`<div class="ach"><div class="at">${t}</div><div class="ad">${d}</div></div>`).join('')}</div>
       <div class="voice"><div class="vq">「${vq}」</div><div class="vw">── ${vw}</div></div>
       <div class="brow" style="margin-top:26px;justify-content:flex-start">
@@ -932,6 +942,7 @@ SC.record=()=>{
       <div class="rl"><div class="a">館 藏</div><div class="b gold">${S.flags.late?'螽斯自行歸位':'任內無失 ・ 螽斯歸位'}</div></div>
       <div class="rl"><div class="a">巡 經</div><div class="b">${Object.keys(S.visited).length} 個位置 ・ 印記 ${S.marks}</div></div>
       ${S.changed.length?`<div class="rl"><div class="a">歷 史</div><div class="b" style="color:var(--jade)">改寫 ${S.changed.length} 處</div></div>`:''}
+      ${S.newRelics.length?`<div class="rl"><div class="a">增 列</div><div class="b" style="color:var(--jade);font-size:14.5px;line-height:1.9">${S.newRelics.join('<br>')}</div></div>`:''}
       <div class="rl"><div class="a">附 記</div><div class="b gold">「${S.motto}」</div></div>
     </div>
     <div class="ln q" style="font-size:18px;margin-top:22px">「紀錄冊需謄抄七日。留下地址，親自送到您手上。」</div>
