@@ -8,6 +8,7 @@
 :root{
   --bg:#060709;--ink:#EDEAE3;--muted:#9A968E;--dim:#6A6660;
   --gold:#C9A227;--gold-l:#E8CE78;--gold-d:#7E661A;
+  --red:#B8443C;--jade:#7FB08A;
   --line:rgba(201,162,39,.22);
   --serif:"Noto Serif TC","Songti TC","Source Han Serif TC",serif;
   --sans:"PingFang TC","Noto Sans TC",-apple-system,sans-serif;
@@ -17,7 +18,6 @@ html,body{height:100%;overflow:hidden}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);letter-spacing:.03em}
 #app{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;cursor:default}
 
-/* ── 背景 ── */
 #bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;
     transition:opacity 1.4s ease;animation:kb 30s ease-out infinite alternate}
 @keyframes kb{from{transform:scale(1.05)}to{transform:scale(1.15) translate3d(-1.4%,-1%,0)}}
@@ -28,13 +28,10 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);letter-spacin
     linear-gradient(180deg,rgba(3,4,6,.72) 0%,rgba(3,4,6,.1) 20%,transparent 40%),
     linear-gradient(0deg,rgba(3,4,6,.78) 0%,rgba(3,4,6,.12) 22%,transparent 42%),
     radial-gradient(130% 110% at 50% 50%,transparent 42%,rgba(3,4,6,.62) 100%)}
-#vig.lift{opacity:.35}
 #grain{position:absolute;inset:-50%;pointer-events:none;opacity:.05;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>");
   animation:gr .6s steps(2) infinite}
 @keyframes gr{0%{transform:translate(0,0)}50%{transform:translate(-3%,2%)}100%{transform:translate(2%,-3%)}}
-
-/* ── 第一人稱 ── */
 #pov{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1s}
 #pov.on{opacity:1}
 #pov::before,#pov::after{content:"";position:absolute;left:0;right:0;height:8vh;background:#040507}
@@ -42,216 +39,261 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);letter-spacin
 body.pov #bg{animation:sway 9s ease-in-out infinite alternate}
 @keyframes sway{from{transform:scale(1.11) translate3d(-.6%,.3%,0)}to{transform:scale(1.14) translate3d(.6%,-.4%,0)}}
 
-/* ── HUD ── */
+/* HUD */
 #hud{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;
-  padding:16px 24px;font-size:11px;letter-spacing:.26em;color:var(--dim);z-index:40;opacity:0;transition:opacity .8s}
+  padding:14px 22px;font-size:11px;letter-spacing:.24em;color:var(--dim);z-index:40;opacity:0;transition:opacity .8s;gap:12px}
 #hud.on{opacity:1}
-#hud b{color:var(--gold-l);font-weight:400;letter-spacing:.14em}
-.clues{display:flex;gap:6px;align-items:center}
-.cd{width:7px;height:7px;border:1px solid var(--gold-d);transform:rotate(45deg)}
-.cd.f{background:var(--gold);box-shadow:0 0 9px rgba(201,162,39,.75)}
+#hud b{color:var(--gold-l);font-weight:400;letter-spacing:.12em}
+#hud .low b{color:var(--red)}
+.marks{display:flex;gap:6px;align-items:center}
+.mk{width:9px;height:9px;border:1px solid var(--gold-d);transform:rotate(45deg);transition:.4s}
+.mk.f{background:var(--gold);box-shadow:0 0 10px rgba(201,162,39,.8)}
 
-/* ── 舞台 ── */
 .stage{position:relative;z-index:20;width:min(880px,93vw);max-height:88vh;overflow-y:auto;padding:14px 0;
   display:flex;flex-direction:column;align-items:center;text-align:center}
 .stage::-webkit-scrollbar{width:0}
-.spk{font-size:11px;letter-spacing:.42em;color:var(--gold);margin-bottom:18px;opacity:0;animation:fu .8s .1s forwards}
-.ln{font-family:var(--serif);font-size:clamp(20px,2.9vw,29px);line-height:1.85;margin-bottom:9px;
+.spk{font-size:11px;letter-spacing:.42em;color:var(--gold);margin-bottom:16px;opacity:0;animation:fu .8s .1s forwards}
+.era{font-size:11px;letter-spacing:.3em;color:var(--jade);margin-bottom:10px}
+.ln{font-family:var(--serif);font-size:clamp(19px,2.7vw,27px);line-height:1.85;margin-bottom:9px;
   opacity:0;transform:translateY(9px);animation:fu .85s forwards;text-shadow:0 2px 26px rgba(0,0,0,.95)}
 .ln.q{color:var(--gold-l);margin-top:12px}
 @keyframes fu{to{opacity:1;transform:none}}
-.tap{margin-top:22px;font-size:11px;letter-spacing:.3em;color:var(--dim);opacity:0;animation:bl 2.4s 1s infinite}
+.tap{margin-top:20px;font-size:11px;letter-spacing:.3em;color:var(--dim);opacity:0;animation:bl 2.4s 1s infinite}
 @keyframes bl{0%,100%{opacity:0}50%{opacity:.75}}
 
-/* ── 上一個決定 ── */
 .recap{width:100%;border:1px solid rgba(201,162,39,.18);background:rgba(10,11,14,.66);
-  padding:12px 18px;margin-bottom:22px;text-align:left;opacity:0;animation:fu .7s forwards}
-.recap .rk{font-size:10px;letter-spacing:.3em;color:var(--dim);margin-bottom:6px}
-.recap .rv{font-size:14px;color:#CFCBC3;line-height:1.7}
+  padding:11px 16px;margin-bottom:18px;text-align:left;opacity:0;animation:fu .7s forwards}
+.recap .rk{font-size:10px;letter-spacing:.3em;color:var(--dim);margin-bottom:5px}
+.recap .rv{font-size:13.5px;color:#CFCBC3;line-height:1.7}
 .recap .rv b{color:var(--gold-l);font-weight:400}
-.tags{display:inline-flex;gap:6px;margin-left:10px;vertical-align:middle}
-.tag{font-size:10.5px;letter-spacing:.1em;color:var(--gold);border:1px solid rgba(201,162,39,.3);
-  padding:2px 8px;white-space:nowrap}
+.tags{display:inline-flex;gap:6px;flex-wrap:wrap;vertical-align:middle}
+.tag{font-size:10.5px;letter-spacing:.1em;color:var(--gold);border:1px solid rgba(201,162,39,.3);padding:2px 8px;white-space:nowrap}
+.tag.chk{border-color:rgba(184,68,60,.55);color:#D9756C}
+.tag.chg{border-color:rgba(127,176,138,.6);color:var(--jade)}
 
-/* ── 選項 ── */
-.opts{width:100%;margin-top:24px;display:flex;flex-direction:column;gap:10px}
-.opt{border:1px solid var(--line);background:rgba(10,11,14,.66);backdrop-filter:blur(9px);
-  padding:15px 20px;font-size:16px;line-height:1.6;color:#DEDAD2;cursor:pointer;text-align:left;
+.opts{width:100%;margin-top:22px;display:flex;flex-direction:column;gap:9px}
+.opt{border:1px solid var(--line);background:rgba(10,11,14,.68);backdrop-filter:blur(9px);
+  padding:14px 18px;font-size:15.5px;line-height:1.6;color:#DEDAD2;cursor:pointer;text-align:left;
   transition:.25s;opacity:0;transform:translateY(11px);animation:fu .55s forwards;
-  display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  display:flex;align-items:baseline;gap:11px;flex-wrap:wrap}
 .opt:hover{border-color:var(--gold);background:rgba(201,162,39,.11);color:#fff;transform:translateX(5px)}
 .opt .oi{color:var(--gold);font-family:var(--serif);font-size:14px}
-.opt .ot{flex:1;min-width:12em}
+.opt .ot{flex:1;min-width:11em}
 .opt .tags{margin-left:auto}
 
-/* ── 委任狀（角色建立）── */
-.warrant{width:min(640px,93vw);border:1px solid var(--line);background:linear-gradient(170deg,rgba(24,26,31,.95),rgba(10,11,14,.97));
-  padding:34px 34px 30px;text-align:left;box-shadow:0 40px 100px rgba(0,0,0,.9)}
-.warrant .wt{font-family:var(--serif);font-size:14px;letter-spacing:.7em;color:var(--gold);text-align:center;margin-bottom:6px}
-.warrant .wh{font-family:var(--serif);font-size:26px;letter-spacing:.35em;text-align:center;margin-bottom:24px}
-.fld{margin-bottom:20px}
-.fld .fl{font-size:11px;letter-spacing:.3em;color:var(--dim);margin-bottom:9px}
-.fld .fl em{font-style:normal;color:var(--gold);letter-spacing:.1em;margin-left:8px;font-size:10.5px}
-.inp{background:transparent;border:0;border-bottom:1px solid var(--gold-d);color:var(--gold-l);
-  font-family:var(--serif);font-size:24px;padding:4px 2px;outline:none;letter-spacing:.12em;width:100%}
-.inp::placeholder{color:rgba(201,162,39,.22)}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{border:1px solid var(--line);padding:9px 16px;font-size:14px;cursor:pointer;transition:.2s;color:#CFCBC3;background:rgba(10,11,14,.6)}
-.chip:hover{border-color:var(--gold)}
-.chip.sel{background:var(--gold);color:#0A0B0D;border-color:var(--gold);font-weight:600}
-.chip small{display:block;font-size:10.5px;color:inherit;opacity:.65;margin-top:2px;letter-spacing:.05em}
-.chip.sel small{opacity:.8}
-select.inp{appearance:none;-webkit-appearance:none;font-size:20px;cursor:pointer}
-select.inp option{background:#14161A;color:var(--ink)}
-.uprow{display:flex;align-items:center;gap:16px}
-.upbox{width:76px;height:76px;border:1px dashed var(--gold-d);display:flex;align-items:center;justify-content:center;
-  color:var(--gold-d);font-size:26px;cursor:pointer;transition:.25s;flex:0 0 auto;overflow:hidden}
-.upbox:hover{border-color:var(--gold);color:var(--gold)}
-.upbox img{width:100%;height:100%;object-fit:cover}
-.uphint{font-size:12px;color:var(--dim);line-height:1.8}
+/* ══ 棋盤 ══ */
+.boardwrap{width:min(560px,92vw);display:flex;flex-direction:column;align-items:center}
+.board{width:100%;aspect-ratio:1;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);
+  gap:5px;padding:5px;border:1px solid var(--line);background:rgba(8,9,11,.82);
+  box-shadow:0 30px 90px rgba(0,0,0,.85)}
+.tile{position:relative;border:1px solid rgba(201,162,39,.16);background:rgba(16,18,22,.9);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  font-size:9.5px;letter-spacing:.04em;color:var(--muted);transition:.35s;overflow:hidden;padding:2px}
+.tile .ic{font-family:var(--serif);font-size:17px;color:var(--gold-d);line-height:1;transition:.35s}
+.tile .nm{font-size:9px;color:#8E8A83;text-align:center;line-height:1.25}
+.tile.done{opacity:.4}
+.tile.done .ic{color:var(--jade)}
+.tile.t-history{border-color:rgba(127,176,138,.35)}
+.tile.t-history .ic{color:var(--jade)}
+.tile.t-crisis{border-color:rgba(184,68,60,.4)}
+.tile.t-crisis .ic{color:#C4655C}
+.tile.t-start{border-color:rgba(201,162,39,.5)}
+.tile.here{border-color:var(--gold);background:rgba(201,162,39,.16);box-shadow:0 0 22px rgba(201,162,39,.35) inset,0 0 18px rgba(201,162,39,.25)}
+.tile.here .ic{color:var(--gold-l);transform:scale(1.18)}
+.tile.path{border-color:rgba(201,162,39,.55);background:rgba(201,162,39,.08)}
+.core{grid-column:2/5;grid-row:2/5;border:1px solid var(--gold-d);background:
+  radial-gradient(circle at 50% 45%,rgba(201,162,39,.16),rgba(8,9,11,.9) 70%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:10px}
+.core .ct{font-family:var(--serif);font-size:clamp(19px,3.6vw,27px);letter-spacing:.22em;color:var(--gold-l)}
+.core .cs{font-size:10.5px;letter-spacing:.24em;color:var(--dim);text-align:center;line-height:1.9}
+.core .cm{display:flex;gap:7px;margin-top:2px}
+.core.open{border-color:var(--gold);box-shadow:0 0 40px rgba(201,162,39,.3) inset;animation:glow 2.2s ease-in-out infinite alternate}
+@keyframes glow{from{box-shadow:0 0 30px rgba(201,162,39,.2) inset}to{box-shadow:0 0 60px rgba(201,162,39,.45) inset}}
+.boardbar{margin-top:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center}
+.bnote{font-size:12px;color:var(--dim);letter-spacing:.1em;text-align:center;line-height:1.8;margin-top:10px;max-width:40ch}
 
-/* ── 撥開／挖掘 ── */
-.digwrap{position:relative;width:min(760px,92vw);aspect-ratio:16/10;border:1px solid var(--line);
-  box-shadow:0 40px 110px rgba(0,0,0,.9);overflow:hidden;touch-action:none}
-.digwrap .under{position:absolute;inset:0;background-size:cover;background-position:center;
-  display:flex;align-items:center;justify-content:center}
-.digwrap canvas{position:absolute;inset:0;width:100%;height:100%;cursor:grab}
-.digwrap canvas:active{cursor:grabbing}
-.dighint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:5;pointer-events:none;
-  font-size:12px;letter-spacing:.34em;color:rgba(237,234,227,.9);text-shadow:0 1px 8px #000;
-  animation:bl 2.2s .6s infinite}
-.plaque{width:min(430px,84%);background:rgba(9,10,12,.92);border:1px solid var(--gold-d);padding:26px 28px;text-align:center}
-.plaque .pt{font-family:var(--serif);font-size:13px;letter-spacing:.5em;color:var(--gold);margin-bottom:12px}
-.plaque .ph{font-family:var(--serif);font-size:30px;letter-spacing:.3em;margin-bottom:12px}
-.plaque .pd{font-size:13.5px;color:#BDB9B1;line-height:2;letter-spacing:.08em}
-.plaque .pd b{color:var(--gold-l);font-weight:400}
+/* ══ 3D 骰子 ══ */
+.dscene{width:110px;height:110px;perspective:800px;cursor:pointer;flex:0 0 auto}
+.dcube{width:110px;height:110px;position:relative;transform-style:preserve-3d;
+  transform:rotateX(-20deg) rotateY(20deg);transition:transform 1.7s cubic-bezier(.18,.72,.22,1)}
+.dcube.spin{transition:transform .1s linear}
+.dface{position:absolute;width:110px;height:110px;background:linear-gradient(150deg,#1C1E23,#0D0E11);
+  border:1px solid var(--gold-d);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);
+  padding:14px;box-shadow:inset 0 0 26px rgba(0,0,0,.75)}
+.pip{width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--gold-l),var(--gold-d));
+  align-self:center;justify-self:center;box-shadow:0 0 9px rgba(201,162,39,.55)}
+.f1{transform:translateZ(55px)} .f6{transform:rotateY(180deg) translateZ(55px)}
+.f2{transform:rotateY(90deg) translateZ(55px)} .f5{transform:rotateY(-90deg) translateZ(55px)}
+.f3{transform:rotateX(90deg) translateZ(55px)} .f4{transform:rotateX(-90deg) translateZ(55px)}
+.dhint{font-size:11px;letter-spacing:.3em;color:var(--gold);animation:bl 2.2s infinite}
 
-/* ── 家庭 stepper ── */
-.step{display:flex;align-items:center;gap:24px;margin-top:20px}
-.sbtn{width:46px;height:46px;border:1px solid var(--line);background:transparent;color:var(--gold);
-  font-size:24px;cursor:pointer;font-family:var(--serif);transition:.22s}
-.sbtn:hover{border-color:var(--gold);background:rgba(201,162,39,.12)}
-.snum{font-family:var(--serif);font-size:50px;color:var(--gold-l);min-width:76px}
-.figs{display:flex;gap:10px;justify-content:center;margin-top:14px;min-height:50px;align-items:flex-end}
-.fig{width:17px;height:42px;background:linear-gradient(180deg,var(--gold-l),var(--gold-d));
-  border-radius:9px 9px 2px 2px;opacity:0;animation:fu .5s forwards;box-shadow:0 0 16px rgba(201,162,39,.45)}
+/* ══ 判定 ══ */
+#check{position:fixed;inset:0;z-index:58;display:none;align-items:center;justify-content:center;
+  flex-direction:column;background:rgba(4,5,7,.92);backdrop-filter:blur(4px)}
+#check.on{display:flex}
+.clabel{font-size:11px;letter-spacing:.44em;color:var(--gold);margin-bottom:24px}
+.cmath{margin-top:26px;font-family:var(--serif);font-size:18px;letter-spacing:.1em;color:#CFCBC3;min-height:1.6em}
+.cmath b{color:var(--gold-l);font-weight:400}
+.cverdict{margin-top:12px;font-family:var(--serif);font-size:28px;letter-spacing:.5em;opacity:0;transition:opacity .5s}
+.cverdict.ok{color:var(--gold-l)} .cverdict.no{color:var(--red)}
+.cverdict.show{opacity:1}
+.ctap{margin-top:26px;font-size:11px;letter-spacing:.3em;color:var(--dim);opacity:0;animation:bl 2.2s .4s infinite}
 
-/* ── 按鈕 ── */
-.btn{margin-top:26px;border:1px solid var(--gold);background:transparent;color:var(--gold-l);
-  padding:13px 42px;font-size:13px;letter-spacing:.4em;cursor:pointer;transition:.28s;font-family:var(--sans)}
-.btn:hover{background:var(--gold);color:#0A0B0D}
-.btn.ghost{border-color:var(--line);color:var(--muted);letter-spacing:.2em;padding:11px 26px;font-size:12px}
-.btn.ghost:hover{border-color:var(--gold);color:var(--gold-l)}
-.btn[disabled]{opacity:.35;pointer-events:none}
-.brow{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+/* ══ 歷史改寫閃現 ══ */
+#rewrite{position:fixed;inset:0;z-index:57;display:none;align-items:center;justify-content:center;
+  flex-direction:column;background:rgba(3,8,5,.94)}
+#rewrite.on{display:flex}
+#rewrite .rt{font-size:11px;letter-spacing:.5em;color:var(--jade);margin-bottom:20px}
+#rewrite .rh{font-family:var(--serif);font-size:clamp(26px,5vw,44px);letter-spacing:.14em;color:#DFF0E4;
+  text-align:center;max-width:20ch;line-height:1.5;text-shadow:0 0 40px rgba(127,176,138,.4)}
+#rewrite .rl{margin-top:22px;width:min(320px,60vw);height:1px;background:linear-gradient(90deg,transparent,var(--jade),transparent)}
 
-/* ── 生成中 ── */
-.render{width:min(520px,88vw);text-align:center}
-.bar{height:2px;background:rgba(201,162,39,.18);margin-top:24px;overflow:hidden}
-.bar i{display:block;height:100%;width:0;background:var(--gold);box-shadow:0 0 12px var(--gold);transition:width .35s}
-.rlog{margin-top:18px;font-size:12.5px;letter-spacing:.16em;color:var(--dim);min-height:2.4em;line-height:1.9}
-
-/* ── 影片 ── */
-.film{width:min(940px,94vw);position:relative}
-.film video{width:100%;display:block;border:1px solid var(--line);background:#000;
-  box-shadow:0 40px 120px rgba(0,0,0,.9)}
-.overlayName{position:absolute;left:26px;bottom:64px;text-align:left;pointer-events:none;
-  text-shadow:0 2px 14px rgba(0,0,0,.9);opacity:0;transition:opacity 1.5s}
-.overlayName.on{opacity:1}
-.overlayName .k{font-size:10px;letter-spacing:.4em;color:var(--gold-l);margin-bottom:6px}
-.overlayName .n{font-family:var(--serif);font-size:26px;letter-spacing:.2em;color:#fff}
-.overlayName .m{font-family:var(--serif);font-size:14px;letter-spacing:.1em;color:rgba(237,234,227,.85);margin-top:6px}
-.filmcap{margin-top:14px;font-size:12px;letter-spacing:.26em;color:var(--gold);text-align:center}
-.filmsub{margin-top:8px;font-size:12px;letter-spacing:.2em;color:var(--dim);text-align:center;cursor:pointer}
-
-/* ── 分析 ── */
-.an{width:min(840px,94vw);text-align:left}
-.antype{text-align:center;margin-bottom:30px}
-.antype .k{font-size:11px;letter-spacing:.44em;color:var(--gold);margin-bottom:14px}
-.antype .t{font-family:var(--serif);font-size:clamp(38px,6.5vw,64px);letter-spacing:.14em;line-height:1.15}
-.antype .s{margin-top:12px;font-size:14px;color:var(--muted);letter-spacing:.1em}
-.bars{margin:26px 0}
-.brow2{display:flex;align-items:center;gap:16px;margin-bottom:12px}
-.brow2 .bl{flex:0 0 66px;font-size:12px;letter-spacing:.18em;color:var(--muted)}
-.brow2 .bt{flex:1;height:7px;background:rgba(201,162,39,.13);position:relative}
-.brow2 .bt i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,var(--gold-d),var(--gold-l));
-  transition:width 1.1s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 10px rgba(201,162,39,.5)}
-.brow2 .bv{flex:0 0 42px;text-align:right;font-family:var(--serif);font-size:17px;color:var(--gold-l)}
-.achv{border-top:1px solid rgba(201,162,39,.16);padding-top:8px;margin-top:10px}
-.ach{padding:15px 0;border-bottom:1px solid rgba(201,162,39,.09)}
-.ach .at{font-family:var(--serif);font-size:17px;color:var(--gold-l);letter-spacing:.06em;margin-bottom:5px}
-.ach .ad{font-size:14px;color:#BDB9B1;line-height:1.85}
-.voice{margin-top:22px;padding:20px 24px;border-left:2px solid var(--gold);background:rgba(201,162,39,.06)}
-.voice .vq{font-family:var(--serif);font-size:17px;line-height:1.9;color:#E4E0D8}
-.voice .vw{margin-top:10px;font-size:11.5px;letter-spacing:.24em;color:var(--gold)}
-
-/* ── 紀錄 / 後台 ── */
-.rec{width:min(560px,90vw);border:1px solid var(--line);background:linear-gradient(170deg,rgba(24,26,31,.95),rgba(10,11,14,.97));
-  padding:36px 32px;text-align:left;box-shadow:0 40px 100px rgba(0,0,0,.9)}
-.rec .rt{font-family:var(--serif);font-size:12px;letter-spacing:.5em;color:var(--gold);text-align:center;margin-bottom:20px}
-.rl{display:flex;padding:11px 0;border-bottom:1px solid rgba(201,162,39,.1);font-size:15px;align-items:baseline}
-.rl:last-child{border:0}
-.rl .a{flex:0 0 92px;font-size:11.5px;letter-spacing:.24em;color:var(--dim)}
-.rl .b{flex:1;font-family:var(--serif);font-size:17px;color:var(--ink)}
-.rl .b.gold{color:var(--gold-l)}
-.bs{width:100%;text-align:left;background:rgba(6,7,9,.94);border:1px solid var(--line);padding:30px 28px;
-    box-shadow:0 40px 100px rgba(0,0,0,.9)}
-.bsh{display:flex;align-items:baseline;gap:14px;margin-bottom:8px;flex-wrap:wrap}
-.bsh .t{font-family:var(--serif);font-size:24px;letter-spacing:.08em}
-.bsh .s{font-size:11px;letter-spacing:.3em;color:var(--gold)}
-.bsub{font-size:13.5px;color:var(--muted);margin-bottom:22px;line-height:1.8}
-.tbl{border:1px solid var(--line);margin-bottom:20px;overflow:hidden}
-.trow{display:flex;border-bottom:1px solid rgba(201,162,39,.1);font-size:13.5px}
-.trow:last-child{border:0}
-.trow.h{background:rgba(201,162,39,.09);font-size:11px;letter-spacing:.2em;color:var(--gold)}
-.trow>div{padding:11px 14px;line-height:1.7}
-.c1{flex:0 0 110px;color:var(--dim);border-right:1px solid rgba(201,162,39,.1)}
-.c2{flex:1.1;color:#D6D2CA;border-right:1px solid rgba(201,162,39,.1)}
-.c3{flex:1;color:var(--gold-l);font-weight:600}
-.brief{border:1px solid var(--gold-d);background:rgba(201,162,39,.07);padding:20px 22px;font-size:15px;line-height:2}
-.brief .bh{font-size:11px;letter-spacing:.3em;color:var(--gold);margin-bottom:10px}
-.brief em{color:var(--gold-l);font-style:normal}
-
-/* ── 轉場 ── */
-#flash{position:fixed;inset:0;background:#000;z-index:60;opacity:0;pointer-events:none;transition:opacity .55s}
-#flash.on{opacity:1;pointer-events:all}
-  text-shadow:0 0 70px rgba(201,162,39,.55)}
-.note{font-size:12.5px;color:var(--dim);line-height:1.9;margin-top:16px;max-width:56ch}
-.skip{position:absolute;right:22px;bottom:16px;z-index:45;font-size:11px;letter-spacing:.26em;
-  color:rgba(154,150,142,.5);cursor:pointer;transition:.3s}
-.skip:hover{color:var(--gold-l)}
-
-/* ── 擲骰判定 ── */
-.opt .tag.chk{border-color:rgba(184,68,60,.55);color:#D9756C}
-#dice{position:fixed;inset:0;z-index:58;display:none;align-items:center;justify-content:center;
-  flex-direction:column;background:rgba(4,5,7,.9);backdrop-filter:blur(4px)}
-#dice.on{display:flex}
-.dlabel{font-size:11px;letter-spacing:.44em;color:var(--gold);margin-bottom:26px}
-.die{width:130px;height:130px;border:1px solid var(--gold-d);display:flex;align-items:center;justify-content:center;
-  font-family:var(--serif);font-size:64px;color:var(--gold-l);background:rgba(14,15,18,.9);
-  box-shadow:0 0 60px rgba(201,162,39,.18),inset 0 0 30px rgba(0,0,0,.6);transform:rotate(45deg)}
-.die span{transform:rotate(-45deg)}
-.die.rolling{animation:droll .12s linear infinite}
-@keyframes droll{0%{transform:rotate(45deg) scale(1)}50%{transform:rotate(43deg) scale(1.04)}100%{transform:rotate(45deg) scale(1)}}
-.dmath{margin-top:28px;font-family:var(--serif);font-size:19px;letter-spacing:.12em;color:#CFCBC3;min-height:1.6em}
-.dmath b{color:var(--gold-l);font-weight:400}
-.dverdict{margin-top:14px;font-family:var(--serif);font-size:30px;letter-spacing:.5em;opacity:0;transition:opacity .5s}
-.dverdict.ok{color:var(--gold-l)}
-.dverdict.no{color:#D9756C}
-.dverdict.show{opacity:1}
-.dtap{margin-top:30px;font-size:11px;letter-spacing:.3em;color:var(--dim);opacity:0;animation:bl 2.2s .4s infinite}
-
-/* ── 震動 ── */
 .shake{animation:shk .6s cubic-bezier(.36,.07,.19,.97)}
 @keyframes shk{10%,90%{transform:translate3d(-2px,0,0)}20%,80%{transform:translate3d(3px,1px,0)}
 30%,50%,70%{transform:translate3d(-5px,-1px,0)}40%,60%{transform:translate3d(5px,1px,0)}}
 
+/* 委任狀 */
+.warrant{width:min(640px,93vw);border:1px solid var(--line);background:linear-gradient(170deg,rgba(24,26,31,.95),rgba(10,11,14,.97));
+  padding:32px 32px 28px;text-align:left;box-shadow:0 40px 100px rgba(0,0,0,.9)}
+.warrant .wt{font-family:var(--serif);font-size:14px;letter-spacing:.7em;color:var(--gold);text-align:center;margin-bottom:6px}
+.warrant .wh{font-family:var(--serif);font-size:25px;letter-spacing:.35em;text-align:center;margin-bottom:22px}
+.fld{margin-bottom:18px}
+.fld .fl{font-size:11px;letter-spacing:.3em;color:var(--dim);margin-bottom:8px}
+.fld .fl em{font-style:normal;color:var(--gold);letter-spacing:.1em;margin-left:8px;font-size:10.5px}
+.inp{background:transparent;border:0;border-bottom:1px solid var(--gold-d);color:var(--gold-l);
+  font-family:var(--serif);font-size:23px;padding:4px 2px;outline:none;letter-spacing:.12em;width:100%}
+.inp::placeholder{color:rgba(201,162,39,.22)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);padding:9px 15px;font-size:13.5px;cursor:pointer;transition:.2s;color:#CFCBC3;background:rgba(10,11,14,.6)}
+.chip:hover{border-color:var(--gold)}
+.chip.sel{background:var(--gold);color:#0A0B0D;border-color:var(--gold);font-weight:600}
+.chip small{display:block;font-size:10.5px;opacity:.65;margin-top:2px;letter-spacing:.05em}
+select.inp{appearance:none;-webkit-appearance:none;font-size:19px;cursor:pointer}
+select.inp option{background:#14161A;color:var(--ink)}
+.uprow{display:flex;align-items:center;gap:14px}
+.upbox{width:72px;height:72px;border:1px dashed var(--gold-d);display:flex;align-items:center;justify-content:center;
+  color:var(--gold-d);font-size:24px;cursor:pointer;transition:.25s;flex:0 0 auto;overflow:hidden}
+.upbox:hover{border-color:var(--gold);color:var(--gold)}
+.upbox img{width:100%;height:100%;object-fit:cover}
+.uphint{font-size:11.5px;color:var(--dim);line-height:1.75}
+
+/* 挖掘 */
+.digwrap{position:relative;width:min(720px,92vw);aspect-ratio:16/10;border:1px solid var(--line);
+  box-shadow:0 40px 110px rgba(0,0,0,.9);overflow:hidden;touch-action:none}
+.digwrap .under{position:absolute;inset:0;background-size:cover;background-position:center;
+  display:flex;align-items:center;justify-content:center}
+.digwrap canvas{position:absolute;inset:0;width:100%;height:100%;cursor:grab}
+.dighint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:5;pointer-events:none;
+  font-size:12px;letter-spacing:.34em;color:rgba(237,234,227,.9);text-shadow:0 1px 8px #000;animation:bl 2.2s .6s infinite}
+.plaque{width:min(420px,84%);background:rgba(9,10,12,.92);border:1px solid var(--gold-d);padding:24px 26px;text-align:center}
+.plaque .pt{font-family:var(--serif);font-size:12.5px;letter-spacing:.5em;color:var(--gold);margin-bottom:10px}
+.plaque .ph{font-family:var(--serif);font-size:28px;letter-spacing:.3em;margin-bottom:10px}
+.plaque .pd{font-size:13px;color:#BDB9B1;line-height:2;letter-spacing:.08em}
+.plaque .pd b{color:var(--gold-l);font-weight:400}
+
+/* stepper */
+.step{display:flex;align-items:center;gap:22px;margin-top:18px}
+.sbtn{width:44px;height:44px;border:1px solid var(--line);background:transparent;color:var(--gold);
+  font-size:23px;cursor:pointer;font-family:var(--serif);transition:.22s}
+.sbtn:hover{border-color:var(--gold);background:rgba(201,162,39,.12)}
+.snum{font-family:var(--serif);font-size:46px;color:var(--gold-l);min-width:70px}
+.figs{display:flex;gap:9px;justify-content:center;margin-top:12px;min-height:46px;align-items:flex-end}
+.fig{width:16px;height:38px;background:linear-gradient(180deg,var(--gold-l),var(--gold-d));
+  border-radius:8px 8px 2px 2px;opacity:0;animation:fu .5s forwards;box-shadow:0 0 14px rgba(201,162,39,.45)}
+
+.btn{margin-top:22px;border:1px solid var(--gold);background:transparent;color:var(--gold-l);
+  padding:13px 40px;font-size:13px;letter-spacing:.4em;cursor:pointer;transition:.28s;font-family:var(--sans)}
+.btn:hover{background:var(--gold);color:#0A0B0D}
+.btn.ghost{border-color:var(--line);color:var(--muted);letter-spacing:.2em;padding:11px 24px;font-size:12px}
+.btn.ghost:hover{border-color:var(--gold);color:var(--gold-l)}
+.btn[disabled]{opacity:.35;pointer-events:none}
+.brow{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+
+.render{width:min(520px,88vw);text-align:center}
+.bar{height:2px;background:rgba(201,162,39,.18);margin-top:22px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--gold);box-shadow:0 0 12px var(--gold);transition:width .35s}
+.rlog{margin-top:16px;font-size:12.5px;letter-spacing:.16em;color:var(--dim);min-height:2.4em;line-height:1.9}
+
+.film{width:min(940px,94vw);position:relative}
+.film video{width:100%;display:block;border:1px solid var(--line);background:#000;box-shadow:0 40px 120px rgba(0,0,0,.9)}
+.overlayName{position:absolute;left:24px;bottom:60px;text-align:left;pointer-events:none;
+  text-shadow:0 2px 14px rgba(0,0,0,.9);opacity:0;transition:opacity 1.5s}
+.overlayName.on{opacity:1}
+.overlayName .k{font-size:10px;letter-spacing:.4em;color:var(--gold-l);margin-bottom:6px}
+.overlayName .n{font-family:var(--serif);font-size:25px;letter-spacing:.2em;color:#fff}
+.overlayName .m{font-family:var(--serif);font-size:13.5px;letter-spacing:.1em;color:rgba(237,234,227,.85);margin-top:6px}
+.filmcap{margin-top:12px;font-size:12px;letter-spacing:.26em;color:var(--gold);text-align:center}
+.filmsub{margin-top:8px;font-size:12px;letter-spacing:.2em;color:var(--dim);text-align:center;cursor:pointer}
+
+.an{width:min(840px,94vw);text-align:left}
+.antype{text-align:center;margin-bottom:26px}
+.antype .k{font-size:11px;letter-spacing:.44em;color:var(--gold);margin-bottom:12px}
+.antype .t{font-family:var(--serif);font-size:clamp(36px,6.2vw,60px);letter-spacing:.14em;line-height:1.15}
+.antype .s{margin-top:10px;font-size:14px;color:var(--muted);letter-spacing:.1em}
+.bars{margin:22px 0}
+.brow2{display:flex;align-items:center;gap:15px;margin-bottom:11px}
+.brow2 .bl{flex:0 0 62px;font-size:12px;letter-spacing:.18em;color:var(--muted)}
+.brow2 .bt{flex:1;height:7px;background:rgba(201,162,39,.13);position:relative}
+.brow2 .bt i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,var(--gold-d),var(--gold-l));
+  transition:width 1.1s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 10px rgba(201,162,39,.5)}
+.brow2 .bv{flex:0 0 40px;text-align:right;font-family:var(--serif);font-size:16px;color:var(--gold-l)}
+.hist{border:1px solid rgba(127,176,138,.35);background:rgba(127,176,138,.07);padding:18px 22px;margin:18px 0}
+.hist .hh{font-size:11px;letter-spacing:.3em;color:var(--jade);margin-bottom:12px}
+.hist .hi{font-family:var(--serif);font-size:16px;color:#CFE5D4;line-height:2;padding-left:16px;position:relative}
+.hist .hi::before{content:"◆";position:absolute;left:0;color:var(--jade);font-size:10px;top:6px}
+.achv{border-top:1px solid rgba(201,162,39,.16);padding-top:6px;margin-top:8px}
+.ach{padding:13px 0;border-bottom:1px solid rgba(201,162,39,.09)}
+.ach .at{font-family:var(--serif);font-size:16.5px;color:var(--gold-l);letter-spacing:.06em;margin-bottom:5px}
+.ach .ad{font-size:13.5px;color:#BDB9B1;line-height:1.85}
+.voice{margin-top:20px;padding:18px 22px;border-left:2px solid var(--gold);background:rgba(201,162,39,.06)}
+.voice .vq{font-family:var(--serif);font-size:16.5px;line-height:1.9;color:#E4E0D8}
+.voice .vw{margin-top:10px;font-size:11.5px;letter-spacing:.24em;color:var(--gold)}
+
+.rec{width:min(560px,90vw);border:1px solid var(--line);background:linear-gradient(170deg,rgba(24,26,31,.95),rgba(10,11,14,.97));
+  padding:34px 30px;text-align:left;box-shadow:0 40px 100px rgba(0,0,0,.9)}
+.rec .rt{font-family:var(--serif);font-size:12px;letter-spacing:.5em;color:var(--gold);text-align:center;margin-bottom:18px}
+.rl{display:flex;padding:10px 0;border-bottom:1px solid rgba(201,162,39,.1);font-size:15px;align-items:baseline}
+.rl:last-child{border:0}
+.rl .a{flex:0 0 88px;font-size:11.5px;letter-spacing:.24em;color:var(--dim)}
+.rl .b{flex:1;font-family:var(--serif);font-size:16.5px;color:var(--ink)}
+.rl .b.gold{color:var(--gold-l)}
+.bs{width:100%;text-align:left;background:rgba(6,7,9,.94);border:1px solid var(--line);padding:28px 26px;
+    box-shadow:0 40px 100px rgba(0,0,0,.9)}
+.bsh{display:flex;align-items:baseline;gap:14px;margin-bottom:8px;flex-wrap:wrap}
+.bsh .t{font-family:var(--serif);font-size:23px;letter-spacing:.08em}
+.bsh .s{font-size:11px;letter-spacing:.3em;color:var(--gold)}
+.bsub{font-size:13.5px;color:var(--muted);margin-bottom:20px;line-height:1.8}
+.tbl{border:1px solid var(--line);margin-bottom:18px;overflow:hidden}
+.trow{display:flex;border-bottom:1px solid rgba(201,162,39,.1);font-size:13.5px}
+.trow:last-child{border:0}
+.trow.h{background:rgba(201,162,39,.09);font-size:11px;letter-spacing:.2em;color:var(--gold)}
+.trow>div{padding:10px 13px;line-height:1.7}
+.c1{flex:0 0 104px;color:var(--dim);border-right:1px solid rgba(201,162,39,.1)}
+.c2{flex:1.1;color:#D6D2CA;border-right:1px solid rgba(201,162,39,.1)}
+.c3{flex:1;color:var(--gold-l);font-weight:600}
+.brief{border:1px solid var(--gold-d);background:rgba(201,162,39,.07);padding:18px 20px;font-size:14.5px;line-height:2}
+.brief .bh{font-size:11px;letter-spacing:.3em;color:var(--gold);margin-bottom:10px}
+.brief em{color:var(--gold-l);font-style:normal}
+
+#flash{position:fixed;inset:0;background:#000;z-index:60;opacity:0;pointer-events:none;transition:opacity .55s}
+#flash.on{opacity:1;pointer-events:all}
+.note{font-size:12.5px;color:var(--dim);line-height:1.9;margin-top:14px;max-width:56ch}
+.skip{position:absolute;right:20px;bottom:14px;z-index:45;font-size:11px;letter-spacing:.26em;
+  color:rgba(154,150,142,.5);cursor:pointer;transition:.3s}
+.skip:hover{color:var(--gold-l)}
+
 @media(max-width:640px){
-  .stage{width:94vw}
-  #hud{padding:11px 13px;font-size:10px;letter-spacing:.14em}
-  .warrant,.rec,.bs{padding:24px 18px}
-  .c1{flex:0 0 78px}.trow{font-size:12.5px}
+  .stage{width:95vw}
+  #hud{padding:10px 12px;font-size:9.5px;letter-spacing:.1em;gap:8px}
+  .warrant,.rec,.bs{padding:22px 16px}
+  .c1{flex:0 0 74px}.trow{font-size:12.5px}
   .opt .tags{margin-left:0;width:100%}
+  .tile .nm{font-size:7.5px}.tile .ic{font-size:14px}
+  .dscene,.dcube,.dface{width:88px;height:88px}
+  .f1{transform:translateZ(44px)}.f6{transform:rotateY(180deg) translateZ(44px)}
+  .f2{transform:rotateY(90deg) translateZ(44px)}.f5{transform:rotateY(-90deg) translateZ(44px)}
+  .f3{transform:rotateX(90deg) translateZ(44px)}.f4{transform:rotateX(-90deg) translateZ(44px)}
+  .pip{width:12px;height:12px}
 }
 </style>
 </head>
@@ -259,40 +301,47 @@ select.inp option{background:#14161A;color:var(--ink)}
 <div id="app">
   <div id="bg"></div><div id="vig"></div><div id="grain"></div><div id="pov"></div>
   <div id="hud">
-    <div>寶城典藏館 ・ 第 <b>087</b> 任館長</div>
-    <div id="clock"></div>
-    <div class="clues" id="clues"></div>
+    <div id="hname">寶城典藏館</div>
+    <div id="clock" class=""></div>
+    <div class="marks" id="marks"></div>
   </div>
   <div class="stage" id="stage"></div>
   <div class="skip" id="skip" style="display:none">略過 →</div>
 </div>
-<div id="dice">
-  <div class="dlabel" id="dl">判 定</div>
-  <div class="die" id="die"><span id="dn">?</span></div>
-  <div class="dmath" id="dm"></div>
-  <div class="dverdict" id="dv"></div>
-  <div class="dtap" id="dt" style="display:none">點 擊 繼 續</div>
+<div id="check">
+  <div class="clabel" id="cl">判 定</div>
+  <div class="dscene"><div class="dcube" id="ccube"></div></div>
+  <div class="cmath" id="cm"></div>
+  <div class="cverdict" id="cv"></div>
+  <div class="ctap" id="ct" style="display:none">點 擊 繼 續</div>
+</div>
+<div id="rewrite">
+  <div class="rt">歷 史 已 改 寫</div>
+  <div class="rh" id="rwh"></div>
+  <div class="rl"></div>
 </div>
 <div id="flash"></div>
 
+<script src="board.js"></script>
 <script>
 /* ═══════════════════════════════════════════════
-   夜巡 v3 — 角色建立 → 選擇會被記住 → 結局由選擇組裝
-   機制參考：人生模擬式敘事（回放上一個決定／flag 門控／成就式結局）
+   夜巡 v5 — 大富翁式路徑・真骰子・可改寫的歷史
    ═══════════════════════════════════════════════ */
 
 const S={
-  name:'',sur:'',birth:1975,age:50,photo:null,
+  name:'',sur:'',birth:1976,age:50,photo:null,
   marital:'',career:'',relic:'',risk:'',
-  flags:{},           // seal / marry / kids / legacy ...
-  data:{},            // 後台欄位
-  ax:{事業:0,家庭:0,傳承:0},          // 影片主軸
-  dim:{決斷:0,傳承:0,風險:0,情感:0,遠見:0}, // 分析長條
-  last:null,          // 上一個決定 {t, tags[]}
-  clues:0,min:0,family:0,roles:[],motto:''
+  pos:0,lap:0,time:360,marks:0,visited:{},
+  flags:{},data:{},changed:[],rolls:[],
+  ax:{事業:0,家庭:0,傳承:0},
+  dim:{決斷:0,傳承:0,風險:0,情感:0,遠見:0},
+  last:null,family:0,roles:[],motto:''
 };
 const el=id=>document.getElementById(id);
 const stage=el('stage'),bgEl=el('bg'),app=el('app');
+const still='animation:none;opacity:1;transform:none';
+const RELIC_BONUS={pen:['決斷',2],watch:['傳承',2],photo:['情感',2],key:['風險',2]};
+const NEED_MARKS=4;
 
 function setTap(fn){app.onclick=fn;app.style.cursor=fn?'pointer':'default';}
 function setBg(src){
@@ -301,53 +350,78 @@ function setBg(src){
   setTimeout(()=>{bgEl.style.backgroundImage=`url('${src}')`;bgEl.classList.add('on');},120);
 }
 function pov(on){document.body.classList.toggle('pov',on);el('pov').classList.toggle('on',on);}
-function lift(on){el('vig').classList.toggle('lift',on);}
 function hud(on){el('hud').classList.toggle('on',on);paint();}
-function paint(){
-  const left=360-S.min;
-  el('clock').innerHTML=left>0
-    ?`天亮還有 <b>${Math.floor(left/60)}</b> 小時 <b>${String(left%60).padStart(2,'0')}</b> 分`
-    :`<b>六點</b>`;
-  el('clues').innerHTML='<span style="margin-right:8px">線索</span>'+
-    Array.from({length:4},(_,i)=>`<span class="cd ${i<S.clues?'f':''}"></span>`).join('');
-}
-function fade(fn){el('flash').classList.add('on');setTimeout(()=>{fn();el('flash').classList.remove('on');},540);}
 function shake(){app.classList.remove('shake');void app.offsetWidth;app.classList.add('shake');}
-const still='animation:none;opacity:1;transform:none';
+function paint(){
+  if(S.name)el('hname').innerHTML=`第 <b>087</b> 任 ・ ${S.name}`;
+  const t=Math.max(0,S.time);
+  el('clock').className=t<=90?'low':'';
+  el('clock').innerHTML=t>0?`天亮還有 <b>${Math.floor(t/60)}</b> 小時 <b>${String(t%60).padStart(2,'0')}</b> 分`:`<b>天 亮 了</b>`;
+  el('marks').innerHTML='<span style="margin-right:7px">印記</span>'+
+    Array.from({length:NEED_MARKS},(_,i)=>`<span class="mk ${i<S.marks?'f':''}"></span>`).join('');
+}
+function fade(fn){el('flash').classList.add('on');setTimeout(()=>{fn();el('flash').classList.remove('on');},520);}
+function spend(m){S.time-=m;paint();}
 
-/* ── 擲骰判定 ──
-   check:{stat,dc}　隨身物給對應加成：筆→決斷 錶→傳承 全家福→情感 鑰匙→風險 */
-const RELIC_BONUS={pen:['決斷',2],watch:['傳承',2],photo:['情感',2],key:['風險',2]};
-S.rolls=[];
-function dice(check,then){
-  const box=el('dice');
+/* ── 骰面 ── */
+const PIPS={1:[5],2:[1,9],3:[1,5,9],4:[1,3,7,9],5:[1,3,5,7,9],6:[1,3,4,6,7,9]};
+function faceHTML(n){
+  let h='';for(let i=1;i<=9;i++)h+=PIPS[n].includes(i)?'<div class="pip"></div>':'<div></div>';
+  return h;
+}
+function buildCube(cube){
+  cube.innerHTML=[1,2,3,4,5,6].map(n=>`<div class="dface f${n}">${faceHTML(n)}</div>`).join('');
+}
+const FACE_ROT={1:[0,0],2:[0,-90],3:[-90,0],4:[90,0],5:[0,90],6:[0,180]};
+function tumble(cube,n,then){
+  cube.classList.add('spin');
+  let k=0;
+  const iv=setInterval(()=>{
+    cube.style.transform=`rotateX(${Math.random()*720-360}deg) rotateY(${Math.random()*720-360}deg)`;
+    if(++k>=9){
+      clearInterval(iv);
+      cube.classList.remove('spin');
+      const[rx,ry]=FACE_ROT[n];
+      cube.style.transform=`rotateX(${rx+720}deg) rotateY(${ry+720}deg)`;
+      setTimeout(then,1800);
+    }
+  },95);
+}
+
+/* ── 能力判定（用真骰子 d20 概念，但視覺用 d6×3 太複雜 → 用 d20 數字＋骰子動畫）── */
+function check(c,then){
+  const box=el('check');
   if(box.classList.contains('on'))return;
   box.classList.add('on');
-  el('dl').textContent=`判 定 ・ ${check.stat} ${check.dc}`;
-  el('dv').className='dverdict';el('dv').textContent='';el('dm').innerHTML='';
-  el('dt').style.display='none';
-  const die=el('die');die.classList.add('rolling');
-  let spins=0;
-  const spin=setInterval(()=>{
-    el('dn').textContent=1+Math.floor(Math.random()*20);
-    if(++spins>=14){
-      clearInterval(spin);die.classList.remove('rolling');
-      const roll=1+Math.floor(Math.random()*20);
-      el('dn').textContent=roll;
-      const rb=RELIC_BONUS[S.relic]||['',0];
-      const bonus=rb[0]===check.stat?rb[1]:0;
-      const total=roll+bonus;
-      const ok=total>=check.dc;
-      el('dm').innerHTML=`擲出 <b>${roll}</b>${bonus?` ＋ 隨身之物 <b>${bonus}</b>`:''} ＝ <b>${total}</b>　${ok?'≥':'＜'}　${check.dc}`;
-      setTimeout(()=>{
-        const v=el('dv');v.textContent=ok?'成 功':'失 敗';
-        v.classList.add(ok?'ok':'no','show');
-        el('dt').style.display='block';
-        S.rolls.push({stat:check.stat,dc:check.dc,total,ok});
-        box.onclick=()=>{box.classList.remove('on');box.onclick=null;then(ok);};
-      },600);
-    }
-  },90);
+  el('cl').textContent=`判 定 ・ ${c.stat} ${c.dc}`;
+  el('cv').className='cverdict';el('cv').textContent='';el('cm').innerHTML='';el('ct').style.display='none';
+  const cube=el('ccube');buildCube(cube);
+  const d1=1+Math.floor(Math.random()*6),d2=1+Math.floor(Math.random()*6),d3=1+Math.floor(Math.random()*6);
+  const rb=RELIC_BONUS[S.relic]||['',0];
+  const bonus=rb[0]===c.stat?rb[1]:0;
+  const total=d1+d2+d3+bonus;
+  tumble(cube,d1,()=>{
+    el('cm').innerHTML=`第一顆 <b>${d1}</b>`;
+    tumble(cube,d2,()=>{
+      el('cm').innerHTML=`<b>${d1}</b> ＋ <b>${d2}</b>`;
+      tumble(cube,d3,()=>{
+        const ok=total>=c.dc;
+        el('cm').innerHTML=`<b>${d1}</b> ＋ <b>${d2}</b> ＋ <b>${d3}</b>${bonus?` ＋ 隨身之物 <b>${bonus}</b>`:''} ＝ <b>${total}</b>　${ok?'≥':'＜'}　${c.dc}`;
+        setTimeout(()=>{
+          const v=el('cv');v.textContent=ok?'成 功':'失 敗';v.classList.add(ok?'ok':'no','show');
+          el('ct').style.display='block';
+          S.rolls.push({stat:c.stat,dc:c.dc,total,ok});
+          box.onclick=()=>{box.classList.remove('on');box.onclick=null;then(ok);};
+        },520);
+      });
+    });
+  });
+}
+
+/* ── 歷史改寫閃現 ── */
+function rewrite(text,then){
+  const r=el('rewrite');el('rwh').textContent=text;r.classList.add('on');
+  setTimeout(()=>{r.classList.remove('on');then();},2600);
 }
 
 /* ── 對白 ── */
@@ -356,6 +430,7 @@ function play(o){
   let i=0;const all=o.lines||[];
   const draw=()=>{
     stage.innerHTML=(o.spk?`<div class="spk" style="${still}">${o.spk}</div>`:'')
+      +(o.era?`<div class="era" style="${still}">${o.era}</div>`:'')
       +all.slice(0,i+1).map((t,k)=>`<div class="ln" style="${k<i?still:''}">${t}</div>`).join('')
       +(i<all.length-1?`<div class="tap">點擊繼續</div>`:'');
     stage.scrollTop=stage.scrollHeight;
@@ -364,223 +439,137 @@ function play(o){
   all.length?(setTap(next),draw()):(setTap(null),o.render());
 }
 
-/* ── 提問（含上一個決定回放）── */
+/* ── 通用提問 ── */
 function ask(o){
-  play({bg:o.bg,spk:o.spk,lines:o.lines,render(){
+  play({bg:o.bg,spk:o.spk,era:o.era,lines:o.lines,render(){
     const recap=S.last?`<div class="recap"><div class="rk">上 一 個 決 定</div>
       <div class="rv">「<b>${S.last.t}</b>」${S.last.note?` ── ${S.last.note}`:''}
       <span class="tags">${(S.last.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</span></div></div>`:'';
     stage.innerHTML=recap
       +(o.spk?`<div class="spk" style="${still}">${o.spk}</div>`:'')
+      +(o.era?`<div class="era" style="${still}">${o.era}</div>`:'')
       +(o.lines||[]).map(t=>`<div class="ln" style="${still}">${t}</div>`).join('')
       +`<div class="ln q" style="${still}">${o.q}</div>`
-      +`<div class="opts">`+o.options.map((p,k)=>
-        `<div class="opt" data-k="${k}" style="animation-delay:${.1+k*.08}s">
+      +`<div class="opts">`+o.opts.map((p,k)=>
+        `<div class="opt" data-k="${k}" style="animation-delay:${.09+k*.07}s">
            <span class="oi">${'一二三四五'[k]}</span><span class="ot">${p.t}</span>
-           <span class="tags">${p.check?`<span class="tag chk">判定 ${p.check.stat} ${p.check.dc}</span>`:''}${(p.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</span>
+           <span class="tags">${p.check?`<span class="tag chk">判定 ${p.check.stat} ${p.check.dc}</span>`:''}${p.changed?'<span class="tag chg">改寫歷史</span>':''}${(p.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</span>
          </div>`).join('')+`</div>`;
     let answered=false;
     stage.querySelectorAll('.opt').forEach(n=>n.onclick=e=>{
       e.stopPropagation();
       if(answered)return;answered=true;
-      const p=o.options[+n.dataset.k];
-      const commit=(note,tags,extraMin)=>{
-        if(o.key)S.data[o.key]={a:p.t,field:p.field||o.field,val:p.val};
+      const p=o.opts[+n.dataset.k];
+      const apply=(note,tags)=>{
+        if(o.key)S.data[o.key]={a:p.t,field:o.field,val:p.val};
         if(p.flag)S.flags[p.flag[0]]=p.flag[1];
         if(p.ax)for(const k in p.ax)S.ax[k]+=p.ax[k];
         if(p.dim)for(const k in p.dim)S.dim[k]+=p.dim[k];
-        S.min+=(o.adv||0)+(extraMin||0);paint();
         S.last={t:p.t,note:note||'',tags:tags||[]};
-        if(o.clue){S.clues++;paint();}
-        fade(()=>go(typeof o.next==='function'?o.next(p):o.next));
+        o.done();
       };
       if(p.check){
-        dice(p.check,ok=>{
+        check(p.check,ok=>{
           const r=ok?(p.win||{}):(p.fail||{});
-          commit(r.note||p.note,(r.tags||p.tags),ok?0:(r.penalty??25));
+          if(!ok&&r.penalty)spend(r.penalty);
+          if(ok&&p.changed){
+            S.changed.push(p.changed);
+            rewrite(p.changed,()=>apply(r.note||p.note,(r.tags||p.tags)));
+            return;
+          }
+          apply(r.note||p.note,(r.tags||p.tags));
         });
       }else{
-        commit(p.note,p.tags,0);
+        if(p.penalty)spend(p.penalty);
+        apply(p.note,p.tags);
       }
     });
   }});
 }
 
-/* ── 撥開／挖掘互動 ── */
-function dig(o){
-  // o:{bg?,spk,lines?,under(html or img),mode:'dust'|'ink',hint,threshold,onDone}
-  setBg(o.bg||'');
-  stage.innerHTML=(o.spk?`<div class="spk" style="${still}">${o.spk}</div>`:'')
-    +(o.lines||[]).map(t=>`<div class="ln" style="${still}">${t}</div>`).join('')
-    +`<div class="digwrap" id="dw">
-        <div class="under" id="du"></div>
-        <canvas id="dc"></canvas>
-        <div class="dighint" id="dh">${o.hint}</div>
-      </div>`;
-  const du=el('du');
-  if(o.underImg)du.style.backgroundImage=`url('${o.underImg}')`;
-  if(o.underHtml)du.innerHTML=o.underHtml;
-  const wrap=el('dw'),cv=el('dc'),ctx=cv.getContext('2d');
-  const W=wrap.clientWidth,H=wrap.clientHeight;
-  cv.width=W;cv.height=H;
-  // 覆蓋層：灰塵 or 印泥
-  if(o.mode==='dust'){
-    ctx.fillStyle='#6B655B';ctx.fillRect(0,0,W,H);
-    const g=ctx.createRadialGradient(W/2,H/2,H*.1,W/2,H/2,H*.9);
-    g.addColorStop(0,'rgba(90,86,78,.4)');g.addColorStop(1,'rgba(38,36,32,.95)');
-    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-    for(let i=0;i<W*H/38;i++){
-      ctx.fillStyle=`rgba(${140+Math.random()*60},${132+Math.random()*55},${115+Math.random()*50},${.06+Math.random()*.3})`;
-      ctx.fillRect(Math.random()*W,Math.random()*H,1.6,1.6);
-    }
-  }else{
-    ctx.fillStyle='#7E1B12';ctx.fillRect(0,0,W,H);
-    for(let i=0;i<W*H/26;i++){
-      const r=Math.random();
-      ctx.fillStyle=r<.5?`rgba(${120+Math.random()*40},18,12,${.15+Math.random()*.4})`
-                        :`rgba(${170+Math.random()*50},${40+Math.random()*20},22,${.1+Math.random()*.35})`;
-      const s=1+Math.random()*3.2;
-      ctx.fillRect(Math.random()*W,Math.random()*H,s,s);
-    }
-    const g=ctx.createRadialGradient(W/2,H/2,H*.12,W/2,H/2,H*.95);
-    g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(40,6,4,.85)');
-    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-  }
-  const R=o.mode==='ink'?34:52;
-  let drawing=false,lx=0,ly=0,strokes=0,done=false;
-  const pos=e=>{const r=cv.getBoundingClientRect();
-    return[(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height];};
-  const carve=(x,y)=>{
-    ctx.globalCompositeOperation='destination-out';
-    const g=ctx.createRadialGradient(x,y,R*.25,x,y,R);
-    g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,R,0,7);ctx.fill();
-    ctx.globalCompositeOperation='source-over';
-  };
-  const ratio=()=>{
-    const d=ctx.getImageData(0,0,W,H,{willReadFrequently:true}).data;
-    let clear=0,n=0;
-    for(let i=3;i<d.length;i+=4*97){n++;if(d[i]<40)clear++;}
-    return clear/n;
-  };
-  const finish=()=>{
-    if(done)return;done=true;
-    cv.style.transition='opacity 1.1s';cv.style.opacity='0';
-    el('dh').style.display='none';
-    setTimeout(()=>{cv.remove();o.onDone();},1150);
-  };
-  cv.addEventListener('pointerdown',e=>{drawing=true;[lx,ly]=pos(e);carve(lx,ly);el('dh').style.opacity='.25';cv.setPointerCapture(e.pointerId);});
-  cv.addEventListener('pointermove',e=>{
-    if(!drawing||done)return;
-    const[x,y]=pos(e);
-    const dx=x-lx,dy=y-ly,dist=Math.hypot(dx,dy),steps=Math.max(1,Math.floor(dist/(R*.4)));
-    for(let i=1;i<=steps;i++)carve(lx+dx*i/steps,ly+dy*i/steps);
-    lx=x;ly=y;
-    if(++strokes%14===0&&ratio()>(o.threshold||.5))finish();
-  });
-  cv.addEventListener('pointerup',()=>{drawing=false;if(!done&&ratio()>(o.threshold||.5))finish();});
+/* ── 落點後的收尾（給印記 → 回棋盤）── */
+function afterTile(gainMark){
+  const tail=[];
+  if(S.last&&S.last.note)tail.push(`<div class="ln">${S.last.note}</div>`);
+  if(gainMark){S.marks++;paint();
+    tail.push(`<div class="ln q" style="animation-delay:.4s">你在紀錄冊上蓋下一枚印記。</div>`);
+    tail.push(`<div class="spk" style="animation-delay:.8s;margin-top:14px">印記 ${S.marks} / ${NEED_MARKS}</div>`);}
+  stage.innerHTML=tail.join('')+`<div class="tap" style="animation-delay:1.2s">點擊繼續</div>`;
+  setTap(()=>{setTap(null);fade(()=>go(S.marks>=NEED_MARKS?'unlock':'board'));});
 }
 
-/* ═══════════ 場景 ═══════════ */
 const SC={};
 
-/* 0 序章（第一人稱，五拍，可跳） */
+/* ══ 序章 ══ */
 SC.prologue=()=>{
   hud(false);pov(true);
-  const BEATS=[
-    {bg:'assets/13_pov_letter.jpg', t:4200, l:['深夜十一點四十分。','司機還在等，你在後座拆開這封信。']},
-    {bg:'assets/13_pov_letter.jpg', t:4200, l:['沒有署名。','只有一個地址、一枚火漆，和一句話——','<span style="color:var(--gold-l)">「本館遺失了一件東西。只有你能找回來。」</span>']},
-    {bg:'assets/01_door.jpg', t:4000, l:['地址在你公司地下二樓。','那扇你走過十年、從來沒開過的鐵門。','今晚，它是開的。']},
-    {bg:'assets/14_pov_corridor.jpg', t:4200, l:['門後不是倉庫。','是一條不該存在的長廊。','展櫃裡的東西，你在課本上見過。']},
-    {bg:'assets/14_pov_corridor.jpg', t:3600, l:['走廊盡頭有燈。','桌上放著一份文件，等你簽。']}
+  const B=[
+    {bg:'assets/13_pov_letter.jpg',t:4200,l:['深夜十一點四十分。','司機還在等，你在後座拆開這封信。']},
+    {bg:'assets/13_pov_letter.jpg',t:4400,l:['沒有署名。','只有一個地址、一枚火漆，和一句話——','<span style="color:var(--gold-l)">「本館遺失了一件東西。只有你能找回來。」</span>']},
+    {bg:'assets/01_door.jpg',t:4000,l:['地址在你公司地下二樓。','那扇你走過十年、從來沒開過的鐵門。','今晚，它是開的。']},
+    {bg:'assets/14_pov_corridor.jpg',t:4200,l:['門後不是倉庫。','是一條不該存在的長廊。','展櫃裡的東西，你在課本上見過。']},
+    {bg:'assets/14_pov_corridor.jpg',t:3600,l:['走廊盡頭有燈。','桌上放著一份文件，等你簽。']}
   ];
   el('skip').style.display='block';
   let i=0,timer;
   const end=()=>{clearTimeout(timer);el('skip').style.display='none';pov(false);fade(()=>go('warrant'));};
   el('skip').onclick=end;
   const beat=()=>{
-    if(i>=BEATS.length)return end();
-    const b=BEATS[i];setBg(b.bg);
+    if(i>=B.length)return end();
+    const b=B[i];setBg(b.bg);
     stage.innerHTML=b.l.map((t,k)=>`<div class="ln" style="animation-delay:${.4+k*.85}s">${t}</div>`).join('');
     timer=setTimeout(beat,b.t);i++;
-  };
-  beat();
+  };beat();
 };
 
-/* 1 委任狀＝角色建立（一頁收完） */
+/* ══ 委任狀 ══ */
 SC.warrant=()=>{
-  setBg('assets/01_door.jpg');lift(true);
+  setBg('assets/01_door.jpg');
   const years=[];for(let y=1996;y>=1946;y--)years.push(y);
   stage.innerHTML=`
   <div class="warrant">
-    <div class="wt">寶 城 典 藏 館</div>
-    <div class="wh">館長委任狀</div>
-
+    <div class="wt">寶 城 典 藏 館</div><div class="wh">館長委任狀</div>
     <div class="fld"><div class="fl">姓 名 <em>紀錄冊將以全名落款</em></div>
       <input class="inp" id="nm" maxlength="6" placeholder="請輸入全名"></div>
-
-    <div style="display:flex;gap:22px;flex-wrap:wrap">
-      <div class="fld" style="flex:1;min-width:150px"><div class="fl">出 生 年</div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap">
+      <div class="fld" style="flex:1;min-width:140px"><div class="fl">出 生 年</div>
         <select class="inp" id="by">${years.map(y=>`<option value="${y}" ${y===1976?'selected':''}>${y} 年</option>`).join('')}</select></div>
-      <div class="fld" style="flex:2;min-width:230px"><div class="fl">身 分 <em>之後的夜裡會用到</em></div>
-        <div class="chips" id="ms">
-          <div class="chip" data-v="single">未婚</div>
-          <div class="chip" data-v="married">已婚</div>
-          <div class="chip" data-v="kids">已婚・有小孩</div>
-        </div></div>
+      <div class="fld" style="flex:2;min-width:220px"><div class="fl">身 分 <em>之後的夜裡會用到</em></div>
+        <div class="chips" id="ms"><div class="chip" data-v="single">未婚</div><div class="chip" data-v="married">已婚</div><div class="chip" data-v="kids">已婚・有小孩</div></div></div>
     </div>
-
     <div class="fld"><div class="fl">現 在 的 你</div>
       <div class="chips" id="cs">
         <div class="chip" data-v="build">還在打拚<small>事業向上，時間最貴</small></div>
         <div class="chip" data-v="own">當家做主<small>一個人說了算</small></div>
-        <div class="chip" data-v="pass">開始想交棒<small>在意留下什麼</small></div>
-      </div></div>
-
-    <div class="fld"><div class="fl">隨 身 帶 一 件 東 西 進 館 <em>按規矩，要留到天亮</em></div>
+        <div class="chip" data-v="pass">開始想交棒<small>在意留下什麼</small></div></div></div>
+    <div class="fld"><div class="fl">隨 身 帶 一 件 東 西 <em>會成為你的判定加成</em></div>
       <div class="chips" id="rl">
-        <div class="chip" data-v="pen">簽第一張合約的筆</div>
-        <div class="chip" data-v="watch">父親留下的錶</div>
-        <div class="chip" data-v="photo">一張全家福</div>
-        <div class="chip" data-v="key">公司大門的鑰匙</div>
-      </div></div>
-
-    <div class="fld"><div class="fl">館 規 第 三 條 ・ 若 館 藏 有 損 <em>就任前必答</em></div>
-      <div class="chips" id="rk">
-        <div class="chip" data-v="self">我自己賠</div>
-        <div class="chip" data-v="share">全館分攤</div>
-        <div class="chip" data-v="insure">早該先保起來</div>
-      </div></div>
-
+        <div class="chip" data-v="pen">簽第一張合約的筆<small>決斷 +2</small></div>
+        <div class="chip" data-v="watch">父親留下的錶<small>傳承 +2</small></div>
+        <div class="chip" data-v="photo">一張全家福<small>情感 +2</small></div>
+        <div class="chip" data-v="key">公司大門的鑰匙<small>風險 +2</small></div></div></div>
+    <div class="fld"><div class="fl">館 規 第 三 條 ・ 若 館 藏 有 損</div>
+      <div class="chips" id="rk"><div class="chip" data-v="self">我自己賠</div><div class="chip" data-v="share">全館分攤</div><div class="chip" data-v="insure">早該先保起來</div></div></div>
     <div class="fld"><div class="fl">館 長 的 樣 子 <em>選填・影像只留在此裝置</em></div>
-      <div class="uprow">
-        <div class="upbox" id="up">＋</div>
+      <div class="uprow"><div class="upbox" id="up">＋</div>
         <input type="file" id="fi" accept="image/*" style="display:none">
-        <div class="uphint">上傳正面照，結尾的交接影像會以您的形象生成。<br>不上傳則以預設館長形象產出。</div>
-      </div></div>
-
+        <div class="uphint">上傳正面照，結尾的交接影像會以您的形象生成。</div></div></div>
     <div style="text-align:center"><button class="btn" id="go" disabled>就　任</button></div>
   </div>`;
-  const need={nm:false,ms:false,cs:false,rl:false,rk:false};
-  const check=()=>{el('go').disabled=!(need.nm&&need.ms&&need.cs&&need.rl&&need.rk);};
-  el('nm').oninput=e=>{need.nm=e.target.value.trim().length>=2;check();};
+  const need={nm:0,ms:0,cs:0,rl:0,rk:0};
+  const chk=()=>el('go').disabled=!Object.values(need).every(Boolean);
+  el('nm').oninput=e=>{need.nm=e.target.value.trim().length>=2;chk();};
   [['ms','marital'],['cs','career'],['rl','relic'],['rk','risk']].forEach(([id,key])=>{
     el(id).querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
       el(id).querySelectorAll('.chip').forEach(x=>x.classList.remove('sel'));
-      c.classList.add('sel');S[key]=c.dataset.v;need[id]=true;check();
-    });
+      c.classList.add('sel');S[key]=c.dataset.v;need[id]=1;chk();});
   });
   el('up').onclick=()=>el('fi').click();
-  el('fi').onchange=e=>{
-    const f=e.target.files[0];if(!f)return;
-    const r=new FileReader();
-    r.onload=ev=>{S.photo=ev.target.result;el('up').innerHTML=`<img src="${S.photo}">`;};
-    r.readAsDataURL(f);
-  };
+  el('fi').onchange=e=>{const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();r.onload=ev=>{S.photo=ev.target.result;el('up').innerHTML=`<img src="${S.photo}">`;};r.readAsDataURL(f);};
   el('go').onclick=()=>{
     S.name=el('nm').value.trim();S.sur=S.name[0];
     S.birth=+el('by').value;S.age=new Date().getFullYear()-S.birth;
-    // 建檔
     const RL={pen:['開創型','簽第一張合約的筆',{決斷:2,遠見:1},{事業:2}],
               watch:['承繼型','父親留下的錶',{傳承:2,情感:1},{傳承:2}],
               photo:['守護型','一張全家福',{情感:2,傳承:1},{家庭:2}],
@@ -592,188 +581,207 @@ SC.warrant=()=>{
     for(const k in RK[1])S.dim[k]+=RK[1][k];
     S.data.base={field:'基本資料',a:`${S.birth} 年生 ・ ${S.age} 歲 ・ ${{single:'未婚',married:'已婚',kids:'已婚有子女'}[S.marital]}`,
                  val:{build:'事業建立期',own:'當家期',pass:'交棒準備期'}[S.career]};
-    S.last={t:{self:'我自己賠',share:'全館分攤',insure:'早該先保起來'}[S.risk],
-            note:'館規第三條，你簽了名',tags:['就任成立']};
-    lift(false);fade(()=>go('midnight'));
+    fade(()=>go('enter'));
   };
 };
 
-/* 2 走廊（第一人稱）→ 撥灰 */
-SC.midnight=()=>{
+/* ══ 進館 ══ */
+SC.enter=()=>{
   hud(false);pov(true);
   play({bg:'assets/14_pov_corridor.jpg',spk:'你 的 視 角',
     lines:['簽完名，走廊的燈一盞一盞暗下去。',
-           '你打開手電筒往回走。玻璃櫃裡，有東西跟著你轉頭。',
-           '大廳的鐘，敲了十二下。',
+           '你打開手電筒。玻璃櫃裡，有東西跟著你轉頭。',
+           '大廳的鐘敲了十二下。',
            '<span style="color:var(--gold-l)">第十二響落下的瞬間——整層樓都醒了。</span>'],
-    render(){shake();S.min=0;hud(true);setTimeout(()=>fade(()=>go('dust')),650);}});
+    render(){shake();setTimeout(()=>fade(()=>go('dust')),650);}});
 };
+
+/* ══ 撥灰：看見任務 ══ */
 SC.dust=()=>{
   pov(true);
-  dig({
-    bg:'assets/02_vitrine.jpg',
-    spk:'零 時 ・ 你 的 視 角',
+  dig({bg:'assets/02_vitrine.jpg',spk:'零 時',
     lines:['中央展櫃是空的。玻璃上積了一層灰。'],
     mode:'dust',hint:'按 住 ， 用 手 擦 開 灰 塵',threshold:.5,
-    underHtml:`<div class="plaque">
-      <div class="pt">館 藏 第 一 號</div>
-      <div class="ph">翠玉白菜</div>
-      <div class="pd">清 ・ 光緒年間 ・ 瑾妃嫁妝<br>
-      葉上雕螽斯與蝗蟲二蟲，寓 <b>多子多孫</b><br><br>
-      <b>── 螽斯，於昨夜失蹤 ──</b></div>
-    </div>`,
+    underHtml:`<div class="plaque"><div class="pt">館 藏 第 一 號</div><div class="ph">翠玉白菜</div>
+      <div class="pd">清 ・ 光緒年間 ・ 瑾妃嫁妝<br>葉上雕螽斯與蝗蟲二蟲，寓 <b>多子多孫</b><br><br><b>── 螽斯，於昨夜失蹤 ──</b></div></div>`,
     onDone(){
-      setTap(null);
+      setTap(null);pov(false);hud(true);
       stage.insertAdjacentHTML('beforeend',
-        `<div class="ln q" style="margin-top:24px">六點鐘響，一切歸位。它沒回來，就永遠不在了。</div>
-         <button class="btn" id="s">開 始 尋 找</button>
-         <div class="note" style="text-align:center">門在你身後上了鎖。</div>`);
-      el('s').onclick=e=>{e.stopPropagation();pov(false);fade(()=>go('c1'));};
+        `<div class="ln q" style="margin-top:20px">六點鐘響，一切歸位。它沒回來，就永遠不在了。</div>
+         <div class="ln" style="font-size:18px;color:#CFCBC3">館裡有十六個位置。走過去，問過去，蒐集四枚印記——<br>櫃子才會為你打開。</div>
+         <button class="btn" id="s">開 始 夜 巡</button>`);
+      el('s').onclick=e=>{e.stopPropagation();fade(()=>go('board'));};
+    }});
+};
+
+/* ══ 棋盤 ══ */
+function tileClass(t,idx){
+  let c='tile t-'+t.type;
+  if(idx===S.pos)c+=' here';
+  if(S.visited[idx])c+=' done';
+  return c;
+}
+SC.board=()=>{
+  setBg('assets/02_vitrine.jpg');pov(false);hud(true);
+  if(S.time<=0)return go('timeup');
+  const cells=Array.from({length:25},()=>'');
+  BOARD.forEach((t,idx)=>{
+    const[c,r]=CELLS[idx];
+    cells[(r-1)*5+(c-1)]=`<div class="${tileClass(t,idx)}" style="grid-column:${c};grid-row:${r}">
+        <div class="ic">${t.icon}</div><div class="nm">${t.name}</div></div>`;
+  });
+  const open=S.marks>=NEED_MARKS;
+  stage.innerHTML=`
+    <div class="boardwrap">
+      <div class="board">
+        ${cells.filter(Boolean).join('')}
+        <div class="core ${open?'open':''}">
+          <div class="ct">翠玉白菜</div>
+          <div class="cs">${open?'櫃 門 已 解 鎖':`需要 ${NEED_MARKS} 枚印記`}</div>
+          <div class="cm">${Array.from({length:NEED_MARKS},(_,i)=>`<span class="mk ${i<S.marks?'f':''}"></span>`).join('')}</div>
+        </div>
+      </div>
+      <div class="boardbar">
+        <div class="dscene" id="ds"><div class="dcube" id="bcube"></div></div>
+        <div>
+          <div class="dhint" id="dh">點 骰 子 前 進</div>
+          <div style="font-size:11.5px;color:var(--dim);letter-spacing:.1em;margin-top:8px">每走一步 −8 分</div>
+        </div>
+      </div>
+      <div class="bnote">你現在在<b style="color:var(--gold-l)">「${BOARD[S.pos].name}」</b>。
+      骰子決定你走到哪——<br>每個人遇到的文物、歷史與危機都不一樣。</div>
+    </div>`;
+  const cube=el('bcube');buildCube(cube);
+  let rolled=false;
+  el('ds').onclick=()=>{
+    if(rolled)return;rolled=true;
+    el('dh').textContent='⋯⋯';
+    const n=1+Math.floor(Math.random()*6);
+    tumble(cube,n,()=>{
+      el('dh').innerHTML=`前 進 <b style="color:var(--gold-l)">${n}</b> 步`;
+      setTimeout(()=>stepMove(n),500);
+    });
+  };
+};
+function stepMove(n){
+  let left=n;
+  const hop=()=>{
+    if(left<=0){
+      spend(8*n);
+      setTimeout(()=>fade(()=>go('land')),450);return;
     }
-  });
+    S.pos=(S.pos+1)%16;
+    if(S.pos===0)S.lap++;
+    left--;
+    document.querySelectorAll('.tile').forEach((el2,i)=>{
+      el2.className=tileClass(BOARD[i],i);
+    });
+    setTimeout(hop,230);
+  };
+  hop();
+}
+
+/* ══ 落點分派 ══ */
+SC.land=()=>{
+  const t=BOARD[S.pos];
+  const seen=S.visited[S.pos];
+  S.visited[S.pos]=true;
+  if(t.type==='start')return go('startTile');
+  if(seen)return go('revisit');
+  if(t.type==='relic')  return relicTile(RELICS[t.key]);
+  if(t.type==='history')return historyTile(HISTORY[t.key]);
+  if(t.type==='crisis') return crisisTile(CRISES[t.key]);
+  if(t.type==='chance') return chanceTile();
+};
+SC.startTile=()=>{
+  play({bg:'assets/01_door.jpg',spk:'入 口',
+    lines:['你繞回了起點。','鐵門還是鎖著的。門縫下面透進一點天光——','<span style="color:var(--gold-l)">已經快了。</span>'],
+    render(){spend(0);afterTile(false);}});
+};
+SC.revisit=()=>{
+  const t=BOARD[S.pos];
+  play({bg:'assets/14_pov_corridor.jpg',spk:t.name,
+    lines:['你又回到了這裡。','「剛剛不是問過你了嗎。」','它把頭轉回去，不再理你。'],
+    render(){spend(10);afterTile(false);}});
 };
 
-/* 3 乾隆（事業／留名）— 開場依事業階段 */
-SC.c1=()=>{
-  const openLine={
-    build:'「還在往上爬的，朕看得出來。眼睛跟朕年輕時一樣。」',
-    own:'「一個人說了算的日子，朕過了六十年。」',
-    pass:'「開始想交棒了？那你來對地方了，這裡每一件東西都是交出來的。」'
-  }[S.career];
-  ask({
-    bg:'assets/03_qianlong.jpg',spk:'關 一 ・ 乾 隆',adv:60,key:'seal',field:'留名慾望',
-    lines:[openLine,'「螽斯的下落，朕知道。」','「不過——」他舉起了那方印，印泥已經沾好，懸在王羲之的真跡正上方。','「你敢攔朕，就攔攔看。」',
-      '<span style="color:var(--muted);font-size:.85em">整排展櫃都在看你。攔皇帝，是要擲骰子的。</span>'],
-    q:'「這幅王羲之，朕蓋不蓋章？」',
-    options:[
-      {t:'蓋。您收的，就該留您的名。',val:'高 ・ 傾向具名傳承、冠名捐贈',
-       flag:['seal','stamp'],ax:{事業:2,傳承:1},dim:{傳承:2,決斷:1},
-       tags:['名 ＋','館藏 −'],note:'乾隆大喜。旁邊的青銅器發出一聲哀號'},
-      {t:'伸手攔住。好東西不該有任何人的痕跡。',val:'低 ・ 傾向匿名、資產保全優先',
-       flag:['seal','clean'],ax:{傳承:2},dim:{遠見:2},
-       check:{stat:'決斷',dc:13},
-       win:{note:'你的手停在印和紙中間。乾隆盯著你三秒，收了印：「兩百年來，第一個。」',tags:['館藏 ＋','名 −','乾隆 另眼相看']},
-       fail:{note:'你伸手，慢了半拍。印蓋了下去，整層樓聽見青銅器的哀號。乾隆聳肩：「朕說過，攔攔看。」',tags:['館藏 −','時間 −25 分'],penalty:25}},
-      {t:'提議蓋在背面。留名，但不礙著它。',val:'中 ・ 務實，可接受信託架構',
-       flag:['seal','back'],ax:{事業:1,傳承:1},dim:{遠見:2,決斷:1},
-       check:{stat:'傳承',dc:10},
-       win:{note:'乾隆歪著頭想了想：「圓滑。」他真的把章蓋在了裱框背面',tags:['名 ＋','館藏 ＋']},
-       fail:{note:'「背面？」乾隆冷笑一聲，當著你的面蓋在正中央。「朕的東西，朕說了算。」',tags:['館藏 −','時間 −25 分'],penalty:25}}
-    ],
-    clue:true,next:'c2'
-  });
-};
+/* 文物格 */
+function relicTile(R){
+  if(R.shake){shake();setTimeout(shake,800);}
+  let block=R;
+  if(R.branch==='marital')block=(S.marital==='single')?R.single:R.family;
+  if(R.branch==='kids')   block=(S.marital==='kids')?R.haskids:R.nokids;
+  ask({bg:R.bg,spk:`${R.who}`,lines:R.intro,q:block.q,field:block.field,key:block.key,opts:block.opts,
+    done(){
+      if(R.outro)S.last.note=(S.last.note?S.last.note+'　':'')+R.outro;
+      spend(20);afterTile(true);
+    }});
+}
+/* 歷史格 */
+function historyTile(H){
+  ask({bg:H.bg,spk:`歷 史 節 點 ・ ${H.title}`,era:H.era,lines:H.intro,q:H.q,opts:H.opts,
+    done(){spend(25);afterTile(true);}});
+}
+/* 危機格 */
+function crisisTile(C){
+  shake();
+  ask({bg:C.bg,spk:`危 機 ・ ${C.title}`,lines:C.intro,q:C.q,opts:C.opts,
+    done(){spend(15);afterTile(false);}});
+}
+/* 機會格 */
+function chanceTile(){
+  const c=CHANCES[Math.floor(Math.random()*CHANCES.length)];
+  play({bg:'assets/02_vitrine.jpg',spk:'典 藏 籤',
+    lines:[`<span style="color:var(--gold-l)">${c.t}</span>`,c.d],
+    render(){
+      if(c.time)spend(-c.time);
+      if(c.dim)for(const k in c.dim)S.dim[k]+=c.dim[k];
+      S.last={t:c.t,note:c.d,tags:[c.time?(c.time>0?`時間 +${c.time}`:`時間 ${c.time}`):'',c.mark?'印記 ＋1':''].filter(Boolean)};
+      spend(10);afterTile(!!c.mark);
+    }});
+}
 
-/* 4 兵馬俑（婚姻）— 開場引用乾隆選擇；題目依身分 */
-SC.c2=()=>{
-  const ref={
-    stamp:'<span style="color:var(--muted);font-size:.85em">左排小聲說：「聽到沒，連館長都要留名。我們站了兩千年，名字沒人念過一次。」</span>',
-    clean:'<span style="color:var(--muted);font-size:.85em">右排小聲說：「他連皇帝的章都敢擋，這人可以商量。」</span>',
-    back:'<span style="color:var(--muted);font-size:.85em">左排小聲說：「蓋在背面……這種人最難猜。」</span>'
-  }[S.flags.seal];
-  shake();setTimeout(shake,900);
-  const brawl=['<span style="color:var(--muted);font-size:.85em">你還沒進門就聽見了——兩排陶土的身體撞在一起，地板在震，最近的展櫃裂了一道縫。</span>',ref,'「館長！他們把陣型撞散了！」','「你再不斷，下一個裂的就是白菜的櫃子！」'];
-  const base={bg:'assets/06_warriors.jpg',spk:'關 二 ・ 兵 馬 俑',adv:70,key:'family_q',clue:true,next:'c3'};
-  if(S.marital==='single'){
-    ask({...base,field:'婚姻意向',
-      lines:[...brawl,'「我們吵的其實是同一件事——一個人站兩千年，跟兩個人並肩站兩千年，哪個好？」'],
-      q:'「你呢？往後的日子，想有人並肩嗎？」',
-      options:[
-        {t:'想。一個人撐太久了。',val:'有成家意願 ・ 保障規劃應含未來家庭',
-         flag:['marry','want'],ax:{家庭:3},dim:{情感:3},
-         check:{stat:'情感',dc:11},
-         win:{note:'你說出口的瞬間，兩排兵同時停手。兩千年的架，吵完了',tags:['家 ＋','陣型 歸位']},
-         fail:{note:'你說了，但聲音被撞擊聲蓋過。他們又推了一輪才停——展櫃的裂縫更長了',tags:['家 ＋','館損 −','時間 −25 分'],penalty:25}},
-        {t:'不了。一個人站得很好。',val:'單身自主 ・ 以自身保障與退休為核心',
-         flag:['marry','solo'],ax:{事業:2},dim:{決斷:2},tags:['自主 ＋'],note:'排頭的老兵舉手，全場靜了。「一個人也是一種站法。」'},
-        {t:'看緣分。強求的站不直。',val:'順其自然 ・ 彈性規劃',
-         flag:['marry','open'],ax:{家庭:1,事業:1},dim:{遠見:1,情感:1},tags:['緣 ・'],note:'「兩千年前也有人這樣說。」他沒說那人後來怎樣'}
-      ]});
-  }else{
-    ask({...base,field:'家庭優先序',
-      lines:[...brawl,'「左排說：家裡的事哪有陣型要緊。右排說：兩千年了，我們就是這樣把家站散的。」'],
-      q:'「明天是你家裡的大日子，今晚館裡出了事——你會怎麼辦？」',
-      options:[
-        {t:'留下處理。家裡的事，之後補。',val:'事業當前 ・ 家庭時間為犧牲項',
-         flag:['prio','work'],ax:{事業:3},dim:{決斷:2},
-         check:{stat:'決斷',dc:12},
-         win:{note:'你捲起袖子，一夜把陣型排回去。左排全體向你行禮',tags:['館 ＋','家 −']},
-         fail:{note:'你留下了，但陣型太重，天快亮才排好一半。右排看著你，像看著當年的自己',tags:['館 ・','家 −','時間 −25 分'],penalty:25}},
-        {t:'回家。館的事，天亮再說。',val:'家庭優先 ・ 保障結構應以家為核心',
-         flag:['prio','home'],ax:{家庭:3},dim:{情感:3},tags:['家 ＋','館 −'],note:'右排立正。這次換左排看著地板'},
-        {t:'打電話回去說清楚，然後留下。',val:'溝通型 ・ 兩頭兼顧但成本自負',
-         flag:['prio','call'],ax:{事業:1,家庭:2},dim:{情感:1,遠見:1},
-         check:{stat:'情感',dc:10},
-         win:{note:'電話那頭沉默三秒，然後說：「去吧。」你聽得出來是真的',tags:['家 ・','館 ・']},
-         fail:{note:'電話那頭說「好」，然後掛了。你知道那個「好」是什麼意思',tags:['家 −','館 ・','時間 −25 分'],penalty:25}}
-      ]});
-  }
+/* ══ 解鎖 → 挖印泥 ══ */
+SC.unlock=()=>{
+  pov(true);
+  play({bg:'assets/03_qianlong.jpg',spk:'解 鎖',
+    lines:['四枚印記湊齊的瞬間，中央展櫃的鎖「喀」一聲彈開了。',
+           '而所有線索都指向同一個地方——','<span style="color:var(--gold-l)">乾隆的印泥盒。</span>'],
+    render(){fade(()=>go('inkdig'));}});
 };
-
-/* 5 溥儀（子嗣／傳承）— 開場引用上一題；題目依身分 */
-SC.c3=()=>{
-  const ref={
-    want:'「你剛剛說想有人並肩。」','solo':'「你剛剛說一個人站得很好。」','open':'「你剛剛說看緣分。」',
-    work:'「你剛剛選了留下。」','home':'「你剛剛選了回家。」','call':'「你剛剛選了打那通電話。」'
-  }[S.flags.marry||S.flags.prio];
-  const base={bg:'assets/07_puyi.jpg',spk:'關 三 ・ 溥 儀',adv:80,clue:true,next:'inkdig'};
-  if(S.marital==='kids'){
-    ask({...base,key:'legacy',field:'傳承意圖',
-      lines:['「……你看得見我？」',ref,'「我沒有孩子。東西從我手上流出去的時候，連個可以怪的人都沒有。」'],
-      q:'「你的家業，將來要交到孩子手上嗎？」',
-      options:[
-        {t:'交。就算他還沒準備好。',val:'血緣優先 ・ 高保額壽險＋教育信託',
-         flag:['legacy','blood'],ax:{家庭:2,傳承:2},dim:{傳承:3,情感:2},tags:['家 ＋','承 ＋'],note:'「我父親也是這樣想的。」他輕聲說'},
-        {t:'交給守得住的人，未必是孩子。',val:'能力優先 ・ 股權信託、家族憲章',
-         flag:['legacy','able'],ax:{事業:2,傳承:2},dim:{遠見:3,決斷:2},tags:['承 ＋','情 −'],note:'他抬起頭：「那你比我父親清醒。」'},
-        {t:'還沒想。現在想這個太早。',val:'未啟動 ・ 最大切入空間',
-         flag:['legacy','none'],ax:{事業:1},dim:{決斷:1},tags:['未 定'],note:'很長的沉默。「那你要快一點。」'}
-      ]});
-  }else{
-    ask({...base,key:'kids_q',field:'子女意向',
-      lines:['「……你看得見我？」',ref,'「有些東西，要有人接，才留得住。我到最後才懂這件事。」'],
-      q:'「你想過要孩子嗎？」',
-      options:[
-        {t:'想。錢的事，再想辦法。',val:'有生育意願 ・ 教育金與家庭保障切入',
-         flag:['kids','want'],ax:{家庭:3,傳承:1},dim:{情感:2,傳承:2},tags:['家 ＋','承 ＋'],note:'「錢的事想得完。」他說，「人不等。」'},
-        {t:'不想。我的人生不缺這一塊。',val:'無生育規劃 ・ 資產以自身與公益為向',
-         flag:['kids','no'],ax:{事業:2,傳承:1},dim:{決斷:2,遠見:1},tags:['自主 ＋'],note:'「至少你是自己選的。」他說，「我連這個都沒得選。」'},
-        {t:'想過。一直沒敢往下算。',val:'猶豫期 ・ 以試算與規劃引導',
-         flag:['kids','maybe'],ax:{家庭:2},dim:{情感:2},tags:['家 ・'],note:'「算吧。」他說，「不算的話，日子會替你決定。」'}
-      ]});
-  }
-};
-
-/* 6 挖印泥（找回螽斯） */
 SC.inkdig=()=>{
   pov(true);
-  dig({
-    bg:'assets/03_qianlong.jpg',
-    spk:'五 時 ・ 你 的 視 角',
-    lines:['三條線索都指向同一個地方——乾隆的印泥盒。','蓋子是開的。裡面的印泥，最近被動過。'],
+  dig({bg:'assets/03_qianlong.jpg',spk:'五 時',
+    lines:['盒蓋是開的。裡面的印泥，最近被動過。'],
     mode:'ink',hint:'按 住 ， 把 印 泥 挖 開',threshold:.42,
     underImg:'assets/12_katydid_ink.jpg',
     onDone(){
-      S.clues=4;paint();
-      const kidsLine={
-        want:'牠有兩個孩子。你剛剛說你也想要——牠大概是聽見了，才肯讓你找到。',
-        no:'牠有兩個孩子。你的選擇跟牠不一樣——但守著什麼，你們是一樣的。',
-        maybe:'牠有兩個孩子。你說你還在算。牠等了一夜，牠也在等一個答案。',
-        undefined:'牠有兩個孩子。牠為了其中一隻，走了一整夜。'
-      }[S.flags.kids];
+      const kl={want:'牠有兩個孩子。你剛剛說你也想要——牠大概是聽見了，才肯讓你找到。',
+                no:'牠有兩個孩子。你的選擇跟牠不一樣——但守著什麼，你們是一樣的。',
+                maybe:'牠有兩個孩子。你說你還在算。牠等了一夜，牠也在等一個答案。'}[S.flags.kids]
+              ||(S.marital==='kids'?'牠有兩個孩子。跟你一樣，牠只是想把走丟的那個找回來。'
+                                   :'牠有兩個孩子。牠為了其中一隻，走了一整夜。');
       setTap(null);
       stage.insertAdjacentHTML('beforeend',
-        `<div class="ln q" style="margin-top:22px">找到了。牠在印泥裡——裡面暖和。</div>
-         <div class="ln" style="font-size:19px;color:#CFCBC3">${S.marital==='kids'?'牠有兩個孩子。跟你一樣，牠只是想把走丟的那個找回來。':kidsLine}</div>
+        `<div class="ln q" style="margin-top:20px">找到了。牠在印泥裡——裡面暖和。</div>
+         <div class="ln" style="font-size:18px;color:#CFCBC3">${kl}</div>
          <button class="btn" id="n">帶 牠 回 去</button>`);
       el('n').onclick=e=>{e.stopPropagation();pov(false);fade(()=>go('family'));};
-    }
-  });
+    }});
+};
+SC.timeup=()=>{
+  pov(true);
+  play({bg:'assets/02_vitrine.jpg',spk:'六 時',
+    lines:['鐘響了六下。','你手上還缺印記，櫃子沒有開。',
+           '但走廊盡頭有東西在動——牠自己回來了。',
+           '<span style="color:var(--gold-l)">牠等不到你，只好自己走回家。</span>'],
+    render(){S.flags.late=true;fade(()=>go('family'));}});
 };
 
-/* 7 幾隻蟲（家庭結構） */
+/* ══ 幾隻蟲 ══ */
 SC.family=()=>{
-  setBg('assets/08_cabbage.jpg');S.family=S.marital==='kids'?3:(S.marital==='married'?2:1);S.roles=[];
+  setBg('assets/08_cabbage.jpg');hud(false);
+  S.family=S.marital==='kids'?3:(S.marital==='married'?2:1);S.roles=[];
   const R=['另一半','子女','父母','孫輩','沒有血緣但算家人的'];
   const draw=()=>{
     stage.innerHTML=`
@@ -781,7 +789,7 @@ SC.family=()=>{
       <div class="ln" style="${still}">白菜身上刻著兩隻蟲——那是牠的家。</div>
       <div class="ln q" style="${still}">「${S.sur}館長，您身上刻著幾隻？」</div>
       <div class="step"><button class="sbtn" id="m">−</button><div class="snum">${S.family}</div><button class="sbtn" id="p">＋</button></div>
-      <div class="figs">${Array.from({length:S.family},(_,i)=>`<div class="fig" style="animation-delay:${i*.06}s;height:${30+((i*13)%22)}px"></div>`).join('')}</div>
+      <div class="figs">${Array.from({length:S.family},(_,i)=>`<div class="fig" style="animation-delay:${i*.06}s;height:${28+((i*13)%22)}px"></div>`).join('')}</div>
       <div class="chips" style="justify-content:center">${R.map(r=>`<div class="chip ${S.roles.includes(r)?'sel':''}" data-r="${r}">${r}</div>`).join('')}</div>
       <button class="btn" id="ok">確 認</button>`;
     el('m').onclick=()=>{S.family=Math.max(0,S.family-1);draw();};
@@ -791,19 +799,17 @@ SC.family=()=>{
     el('ok').onclick=()=>{
       S.data.family={field:'家庭結構',a:`${S.family} 人 ・ ${S.roles.join('、')||'未指定'}`,val:`受扶養／受益對象 ${S.family} 人`};
       S.dim.情感+=Math.min(S.family,3);S.ax.家庭+=Math.min(S.family,2);
-      S.min=300;paint();fade(()=>go('motto'));};
+      fade(()=>go('motto'));};
   };draw();
 };
-
-/* 8 落款 */
 SC.motto=()=>{
   setBg('assets/08_cabbage.jpg');
   const M=['我沒有辜負交到我手上的東西。','我做的每個決定，都想過下一代。','我來過。我盡力了。','這裡的東西，一件都沒少。'];
   stage.innerHTML=`
     <div class="spk" style="${still}">交 接 紀 錄 ・ 附 記</div>
     <div class="ln q" style="${still}">「三百年後有人翻到這一頁。要寫哪一句？」</div>
-    <div class="opts">${M.map((m,k)=>`<div class="opt" data-m="${m}" style="animation-delay:${.08+k*.07}s"><span class="oi">${'一二三四'[k]}</span><span class="ot">${m}</span></div>`).join('')}
-      <div class="opt" id="own" style="animation-delay:.4s"><span class="oi">五</span><span class="ot">⋯⋯我自己寫。</span></div></div>`;
+    <div class="opts">${M.map((m,k)=>`<div class="opt" data-m="${m}" style="animation-delay:${.07+k*.06}s"><span class="oi">${'一二三四'[k]}</span><span class="ot">${m}</span></div>`).join('')}
+      <div class="opt" id="own" style="animation-delay:.35s"><span class="oi">五</span><span class="ot">⋯⋯我自己寫。</span></div></div>`;
   stage.querySelectorAll('.opt[data-m]').forEach(n=>n.onclick=()=>{S.motto=n.dataset.m;fade(()=>go('render'));});
   el('own').onclick=()=>{
     stage.innerHTML=`<div class="spk" style="${still}">附 記</div><div class="ln q" style="${still}">寫下你的那一句。</div>
@@ -813,7 +819,7 @@ SC.motto=()=>{
     el('mi').onkeydown=e=>{if(e.key==='Enter')el('d').click();};};
 };
 
-/* 9 天亮 → 封存 → 影片（依選擇） */
+/* ══ 影片 ══ */
 function pickEnd(){
   const m=Math.max(S.ax.家庭,S.ax.傳承,S.ax.事業);
   if(m===S.ax.家庭)return{src:'assets/end_family.mp4',cap:'牠回家了。你也該回了。',key:'家庭'};
@@ -821,77 +827,68 @@ function pickEnd(){
   return{src:'assets/end_glory.mp4',cap:'任內館藏無失。',key:'事業'};
 }
 SC.render=()=>{
-  setBg('assets/08_cabbage.jpg');
-  stage.innerHTML=`
-    <div class="render">
+  setBg('assets/08_cabbage.jpg');hud(false);
+  stage.innerHTML=`<div class="render">
       <div class="spk" style="${still}">六 時 ・ 交 接 影 像 封 存 中</div>
-      <div class="ln" style="${still};font-size:19px;color:#CFCBC3">遠處，鐘敲了六下。牠在你掌心裡，被送回葉子上。</div>
-      <div class="bar"><i id="pb"></i></div>
-      <div class="rlog" id="rl">讀取六小時的裁決紀錄⋯⋯</div>
-    </div>`;
+      <div class="ln" style="${still};font-size:18px;color:#CFCBC3">遠處，鐘敲了六下。牠在你掌心裡，被送回葉子上。</div>
+      <div class="bar"><i id="pb"></i></div><div class="rlog" id="rl">讀取這一夜的裁決紀錄⋯⋯</div></div>`;
   const e=pickEnd();
-  const L=['讀取六小時的裁決紀錄⋯⋯',
-           `比對第 001–086 任館長檔案⋯⋯你的主軸：${e.key}`,
-           S.rolls.length?`判定 ${S.rolls.length} 次 ・ 成 ${S.rolls.filter(r=>r.ok).length} 敗 ${S.rolls.filter(r=>!r.ok).length}`:'這一夜，你沒有賭過一次',
-           S.photo?'將您的形象繪入交接影像⋯⋯':'以館長形象繪製交接影像⋯⋯',
-           '封存完成。'];
+  const L=['讀取這一夜的裁決紀錄⋯⋯',
+    `你走過 ${Object.keys(S.visited).length} 個位置 ・ 主軸：${e.key}`,
+    S.changed.length?`偵測到 ${S.changed.length} 處歷史改寫⋯⋯正在重新比對館藏`:'歷史維持原狀',
+    S.rolls.length?`判定 ${S.rolls.length} 次 ・ 成 ${S.rolls.filter(r=>r.ok).length} 敗 ${S.rolls.filter(r=>!r.ok).length}`:'這一夜，你沒有賭過一次',
+    S.photo?'將您的形象繪入交接影像⋯⋯':'以館長形象繪製交接影像⋯⋯','封存完成。'];
   let i=0;
   const t=setInterval(()=>{
-    i++;el('pb').style.width=Math.min(i*26,100)+'%';
-    el('rl').textContent=L[Math.min(i,L.length-1)];
-    if(i>=5){clearInterval(t);setTimeout(()=>fade(()=>go('film')),700);}
-  },850);
+    i++;el('pb').style.width=Math.min(i*20,100)+'%';el('rl').textContent=L[Math.min(i,L.length-1)];
+    if(i>=6){clearInterval(t);setTimeout(()=>fade(()=>go('film')),700);}
+  },800);
 };
 SC.film=()=>{
   setBg('');
   const e=pickEnd();
   stage.innerHTML=`
     <div class="film">
-      <video id="v" playsinline autoplay muted poster="assets/08_cabbage.jpg">
-        <source src="${e.src}" type="video/mp4">
-      </video>
+      <video id="v" playsinline autoplay muted loop poster="assets/08_cabbage.jpg"><source src="${e.src}" type="video/mp4"></video>
       <div class="overlayName" id="ov">
         <div class="k">寶 城 典 藏 館 ・ 交 接 影 像</div>
         <div class="n">第 087 任館長 ・ ${S.name}</div>
-        <div class="m">「${S.motto}」</div>
-      </div>
-      <div class="filmcap">${e.cap}</div>
+        <div class="m">「${S.motto}」</div></div>
+      <div class="filmcap">${S.flags.late?'牠自己回來了。而你來得及看見。':e.cap}</div>
       <div class="filmsub" id="sound">點 此 開 啟 聲 音</div>
     </div>
     <div class="brow" id="nx" style="opacity:0;transition:opacity 1.2s;pointer-events:none">
       <button class="btn" id="n">查 看 裁 決 分 析</button></div>
-    <div class="note" style="text-align:center">這支影像由你今晚的選擇決定——主軸不同的人，看到的是另一支。<br>正式版將以您上傳的照片生成專屬影像。</div>`;
+    <div class="note" style="text-align:center">這支影像由你今晚的路徑決定——走過不同格子的人，看到的是另一支。</div>`;
   const v=el('v');v.play().catch(()=>{});
   el('sound').onclick=ev=>{ev.stopPropagation();v.muted=!v.muted;el('sound').textContent=v.muted?'點 此 開 啟 聲 音':'聲 音 已 開 啟';};
   setTimeout(()=>el('ov').classList.add('on'),2200);
-  setTimeout(()=>{const b=el('nx');b.style.opacity='1';b.style.pointerEvents='auto';},8000);
+  setTimeout(()=>{const b=el('nx');b.style.opacity='1';b.style.pointerEvents='auto';},7500);
   el('n').onclick=()=>fade(()=>go('analysis'));
 };
 
-/* 10 裁決分析（成就式） */
+/* ══ 分析 ══ */
 function achievements(){
-  const A=[];const f=S.flags;
-  if(f.seal==='stamp'&&(f.legacy==='blood'||f.legacy==='able'))A.push(['說到做到','你要留名，也真的在安排。八十六任裡，說了又做的不到二十位。']);
+  const A=[],f=S.flags;
+  const wins=S.rolls.filter(r=>r.ok).length,fails=S.rolls.length-wins;
+  if(S.changed.length>=2)A.push(['改寫了不只一次','你動了兩處以上的歷史。館藏目錄因此重編過——沒有人知道原本該長什麼樣。']);
+  if(S.changed.length===1)A.push(['你動了一次手','歷史被改了一個地方。只有你知道是哪裡。']);
+  if(!S.changed.length)A.push(['你什麼都沒改','每一個節點你都讓它按原樣發生。守成也是一種立場。']);
   if(f.seal==='clean')A.push(['不留痕跡','你連皇帝的章都擋了。守一樣東西守到自己都不碰，這種人不多。']);
   if(f.marry==='solo')A.push(['一個人也很好','你不是沒想過。你是想清楚了。']);
-  if(f.marry==='want')A.push(['想有人並肩','兩千年的兵替你高興了一下。他們很少替活人高興。']);
   if(f.kids==='want')A.push(['你算過那筆錢','算完之後，你還是說要。']);
-  if(f.kids==='no')A.push(['自己選的路','溥儀說得對——至少你是自己選的。']);
   if(f.kids==='maybe')A.push(['還在算','日子不會等試算表。牠等了一夜，你打算等幾年？']);
   if(f.prio==='home')A.push(['你回了家','館裡少你一晚不會怎樣。家裡少你一晚，有人記一輩子。']);
-  if(f.prio==='work')A.push(['你留了下來','館史會記得這一晚。家裡那本帳，記在另一個地方。']);
   if(f.legacy==='none')A.push(['還沒開始安排','八十六任裡有六十三位跟你一樣。差別是，他們大多在三年內動了手。']);
   if(S.risk==='self')A.push(['「我自己賠」','第 4、17、52、81 任都說過同一句。其中兩位，真的賠了。']);
-  if(S.risk==='insure')A.push(['早該保起來','你是今晚唯一一個，在出事之前就想到這件事的人。']);
-  const wins=S.rolls.filter(r=>r.ok).length,fails=S.rolls.length-wins;
-  if(S.rolls.length>=2&&fails===0)A.push(['連骰子都站你這邊','每一次判定都過了。有些夜晚就是這樣——你開口，整座館都答應。']);
-  if(fails>=1)A.push(['沒攔住的那一下','有一次判定沒過。夜裡的事不會都聽你的，這才像真的人生。']);
-  if(S.rolls.length===0)A.push(['一次都沒賭','所有帶判定的選項你都繞開了。穩，是一種選法；也是一種答案。']);
-  if(S.photo)A.push(['留下了樣子','三百年後的人翻開紀錄，會知道第 087 任長什麼樣子。']);
+  if(S.rolls.length>=2&&fails===0)A.push(['連骰子都站你這邊','每一次判定都過了。有些夜晚就是這樣。']);
+  if(fails>=2)A.push(['手氣不好的那一夜','兩次以上沒過。而你還是走到了最後。']);
+  if(S.flags.late)A.push(['你來不及','天亮的時候你還缺印記。牠自己回來了——這一次。']);
   return A.slice(0,4);
 }
 function voice(){
   const e=pickEnd().key;
+  if(S.changed.length>=2)return['我活了三千年，第一次看到有人真的動手改。他不是來參觀的。','毛公鼎'];
   if(e==='家庭')return['他隔著玻璃看了我很久。那個眼神我認得——家裡有人在等的人，才有那種眼神。','翠玉白菜'];
   if(e==='傳承')return['他問的那些問題，當年沒有人問過我。如果有人問過，也許東西就不會散了。','溥儀'];
   return['朕見過很多想贏的人。他是少數贏了之後，還記得回頭看一眼的。','乾隆'];
@@ -907,59 +904,51 @@ SC.analysis=()=>{
             風險:['扛下來的館長','風險？那是我的事。'],
             情感:['守著人的館長','你護的不是館藏，是館藏後面的人。'],
             遠見:['布局的館長','你早就想過今晚會發生什麼。']}[top];
-  const [vq,vw]=voice();
+  const[vq,vw]=voice();
   stage.innerHTML=`
     <div class="an">
-      <div class="antype">
-        <div class="k">第 087 任館長 ・ 裁決分析</div>
-        <div class="t">${TY[0]}</div>
-        <div class="s">${TY[1]}</div>
-      </div>
-      <div class="bars">
-        ${D.map(k=>`<div class="brow2"><div class="bl">${k}</div><div class="bt"><i data-w="${pct[k]}"></i></div><div class="bv">${pct[k]}</div></div>`).join('')}
-      </div>
-      <div class="achv">
-        ${achievements().map(([t,d])=>`<div class="ach"><div class="at">${t}</div><div class="ad">${d}</div></div>`).join('')}
-      </div>
+      <div class="antype"><div class="k">第 087 任館長 ・ 裁決分析</div>
+        <div class="t">${TY[0]}</div><div class="s">${TY[1]}</div></div>
+      <div class="bars">${D.map(k=>`<div class="brow2"><div class="bl">${k}</div><div class="bt"><i data-w="${pct[k]}"></i></div><div class="bv">${pct[k]}</div></div>`).join('')}</div>
+      ${S.changed.length?`<div class="hist"><div class="hh">你 改 寫 的 歷 史</div>
+        ${S.changed.map(c=>`<div class="hi">${c}</div>`).join('')}</div>`:''}
+      <div class="achv">${achievements().map(([t,d])=>`<div class="ach"><div class="at">${t}</div><div class="ad">${d}</div></div>`).join('')}</div>
       <div class="voice"><div class="vq">「${vq}」</div><div class="vw">── ${vw}</div></div>
-      <div class="brow" style="margin-top:28px;justify-content:flex-start">
+      <div class="brow" style="margin-top:26px;justify-content:flex-start">
         <button class="btn" id="n">交 接 紀 錄</button>
-        <button class="btn ghost" id="b">顧問後台檢視 →</button>
-      </div>
+        <button class="btn ghost" id="b">顧問後台檢視 →</button></div>
     </div>`;
   setTimeout(()=>stage.querySelectorAll('.bt i').forEach(n=>n.style.width=n.dataset.w+'%'),120);
   el('n').onclick=()=>fade(()=>go('record'));
   el('b').onclick=()=>fade(()=>go('backstage'));
 };
 
-/* 11 交接紀錄＋交付 */
 SC.record=()=>{
   setBg('assets/08_cabbage.jpg');
   stage.innerHTML=`
-    <div class="rec">
-      <div class="rt">寶 城 典 藏 館 ・ 交 接 紀 錄</div>
+    <div class="rec"><div class="rt">寶 城 典 藏 館 ・ 交 接 紀 錄</div>
       <div class="rl"><div class="a">任 期</div><div class="b">二〇二六年 ・ 一夜</div></div>
       <div class="rl"><div class="a">館 長</div><div class="b gold">第 087 任 ・ ${S.name}</div></div>
-      <div class="rl"><div class="a">館 藏</div><div class="b gold">任內無失 ・ 螽斯歸位</div></div>
-      <div class="rl"><div class="a">留 存</div><div class="b">${S.data.relic.a}</div></div>
+      <div class="rl"><div class="a">館 藏</div><div class="b gold">${S.flags.late?'螽斯自行歸位':'任內無失 ・ 螽斯歸位'}</div></div>
+      <div class="rl"><div class="a">巡 經</div><div class="b">${Object.keys(S.visited).length} 個位置 ・ 印記 ${S.marks}</div></div>
+      ${S.changed.length?`<div class="rl"><div class="a">歷 史</div><div class="b" style="color:var(--jade)">改寫 ${S.changed.length} 處</div></div>`:''}
       <div class="rl"><div class="a">附 記</div><div class="b gold">「${S.motto}」</div></div>
     </div>
-    <div class="ln q" style="font-size:19px;margin-top:26px">「紀錄冊需謄抄七日。留下地址，親自送到您手上。」</div>
-    <div class="brow" style="margin-top:18px">
+    <div class="ln q" style="font-size:18px;margin-top:22px">「紀錄冊需謄抄七日。留下地址，親自送到您手上。」</div>
+    <div class="brow" style="margin-top:16px">
       <button class="btn" id="f">留 下 聯 絡 方 式</button>
       <button class="btn ghost" id="s">跳過，看後台</button></div>`;
   el('f').onclick=()=>{
     stage.innerHTML=`<div class="spk" style="${still}">實 體 交 付</div>
-      <div class="ln q" style="font-size:20px;${still}">紀錄冊將由專屬顧問親送。</div>
-      <input class="inp" placeholder="行動電話" style="width:min(520px,80vw);margin-top:22px;font-size:20px;text-align:center">
-      <input class="inp" placeholder="送達地址" style="width:min(520px,80vw);margin-top:18px;font-size:20px;text-align:center">
+      <div class="ln q" style="font-size:19px;${still}">紀錄冊將由專屬顧問親送。</div>
+      <input class="inp" placeholder="行動電話" style="width:min(520px,80vw);margin-top:20px;font-size:19px;text-align:center">
+      <input class="inp" placeholder="送達地址" style="width:min(520px,80vw);margin-top:16px;font-size:19px;text-align:center">
       <button class="btn" id="d">送 出</button>
       <div class="note" style="text-align:center">Demo 不會送出任何資料。</div>`;
     el('d').onclick=()=>fade(()=>go('backstage'));};
   el('s').onclick=()=>fade(()=>go('backstage'));
 };
 
-/* 12 顧問後台 */
 SC.backstage=()=>{
   setBg('');hud(false);
   const rows=Object.values(S.data).map(d=>
@@ -976,10 +965,11 @@ SC.backstage=()=>{
     :'從他今晚的選擇談起，不要從商品談起';
   const resist=S.risk==='self'?'高——第一次見面完全不要提商品'
     :S.risk==='share'?'中——可從互助概念自然帶入':'低——可較早進入規劃討論';
+  const wins=S.rolls.filter(r=>r.ok).length;
   stage.innerHTML=`
     <div class="bs">
       <div class="bsh"><span class="s">顧 問 後 台</span><span class="t">${S.name}　客戶檔案</span>
-        <span style="font-size:12px;color:var(--dim);margin-left:auto">第 087 號 ・ ${S.age} 歲 ・ 一夜完成</span></div>
+        <span style="font-size:12px;color:var(--dim);margin-left:auto">第 087 號 ・ ${S.age} 歲</span></div>
       <div class="bsub">同一份體驗，客戶看到的是故事、影像與裁決分析；顧問看到的是這一頁。<br>
         <b style="color:var(--gold-l)">客戶從頭到尾沒有填過一張表格。</b></div>
       <div class="tbl">
@@ -987,24 +977,77 @@ SC.backstage=()=>{
         ${rows}
         <div class="trow"><div class="c1">人生信條</div><div class="c2">「${S.motto}」</div><div class="c3">親筆附記 ・ 破冰最強素材</div></div>
         <div class="trow"><div class="c1">影像</div><div class="c2">${S.photo?'已上傳本人照片':'未上傳'}</div><div class="c3">${S.photo?'可生成專屬交接影像':'以預設形象產出'}</div></div>
-        ${S.rolls.length?`<div class="trow"><div class="c1">風險行為</div><div class="c2">判定 ${S.rolls.length} 次 ・ 成 ${S.rolls.filter(r=>r.ok).length} 敗 ${S.rolls.filter(r=>!r.ok).length}</div><div class="c3">${S.rolls.length>=2?'高風險耐受 ・ 賭性可引導':'選擇性冒險 ・ 中度風險偏好'}</div></div>`
-        :`<div class="trow"><div class="c1">風險行為</div><div class="c2">全程避開判定選項</div><div class="c3">保守決策風格 ・ 訴求確定性商品</div></div>`}
+        <div class="trow"><div class="c1">風險行為</div><div class="c2">${S.rolls.length?`主動判定 ${S.rolls.length} 次 ・ 成 ${wins} 敗 ${S.rolls.length-wins}`:'全程避開所有判定'}</div>
+          <div class="c3">${S.rolls.length>=3?'高風險耐受 ・ 賭性可引導':S.rolls.length?'選擇性冒險 ・ 中度風險偏好':'保守決策 ・ 訴求確定性商品'}</div></div>
+        <div class="trow"><div class="c1">介入傾向</div><div class="c2">${S.changed.length?`改寫歷史 ${S.changed.length} 處`:'完全不介入歷史'}</div>
+          <div class="c3">${S.changed.length>=2?'主動介入型 ・ 願為結果承擔':S.changed.length?'選擇性介入':'尊重既定秩序 ・ 不輕易變動架構'}</div></div>
       </div>
-      <div class="brief">
-        <div class="bh">系 統 建 議 ・ 首 次 接 觸</div>
+      <div class="brief"><div class="bh">系 統 建 議 ・ 首 次 接 觸</div>
         推銷抗性：<em>${resist}</em><br>
         開場建議：<em>${open}</em>。<br>
         優先議題：<em>${anx}</em>；受益／受扶養對象 <em>${S.family} 人</em>。<br>
-        可用破冰句：他親手寫下「<em>${S.motto}</em>」——見面時從這句開始。
-      </div>
-      <div class="note" style="margin-top:22px">
-        後台<b style="color:var(--gold-l)">不丟原始欄位給業務員，只丟「怎麼開口」</b>。<br>
-        這一條決定顧問會不會用第二次。</div>
-      <div class="brow" style="margin-top:28px;justify-content:flex-start">
+        可用破冰句：他親手寫下「<em>${S.motto}</em>」——見面時從這句開始。</div>
+      <div class="note" style="margin-top:20px">
+        後台<b style="color:var(--gold-l)">不丟原始欄位給業務員，只丟「怎麼開口」</b>。</div>
+      <div class="brow" style="margin-top:24px;justify-content:flex-start">
         <button class="btn" id="r">重 新 體 驗</button></div>
     </div>`;
-  el('r').onclick=()=>{location.reload();};
+  el('r').onclick=()=>location.reload();
 };
+
+/* ── 撥開／挖掘 ── */
+function dig(o){
+  setBg(o.bg||'');
+  stage.innerHTML=(o.spk?`<div class="spk" style="${still}">${o.spk}</div>`:'')
+    +(o.lines||[]).map(t=>`<div class="ln" style="${still}">${t}</div>`).join('')
+    +`<div class="digwrap" id="dw"><div class="under" id="du"></div><canvas id="dc"></canvas>
+       <div class="dighint" id="dh2">${o.hint}</div></div>`;
+  const du=el('du');
+  if(o.underImg)du.style.backgroundImage=`url('${o.underImg}')`;
+  if(o.underHtml)du.innerHTML=o.underHtml;
+  const wrap=el('dw'),cv=el('dc'),ctx=cv.getContext('2d',{willReadFrequently:true});
+  const W=wrap.clientWidth,H=wrap.clientHeight;cv.width=W;cv.height=H;
+  if(o.mode==='dust'){
+    ctx.fillStyle='#6B655B';ctx.fillRect(0,0,W,H);
+    const g=ctx.createRadialGradient(W/2,H/2,H*.1,W/2,H/2,H*.9);
+    g.addColorStop(0,'rgba(90,86,78,.4)');g.addColorStop(1,'rgba(38,36,32,.95)');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    for(let i=0;i<W*H/38;i++){
+      ctx.fillStyle=`rgba(${140+Math.random()*60},${132+Math.random()*55},${115+Math.random()*50},${.06+Math.random()*.3})`;
+      ctx.fillRect(Math.random()*W,Math.random()*H,1.6,1.6);}
+  }else{
+    ctx.fillStyle='#7E1B12';ctx.fillRect(0,0,W,H);
+    for(let i=0;i<W*H/26;i++){
+      const r=Math.random();
+      ctx.fillStyle=r<.5?`rgba(${120+Math.random()*40},18,12,${.15+Math.random()*.4})`:`rgba(${170+Math.random()*50},${40+Math.random()*20},22,${.1+Math.random()*.35})`;
+      const s=1+Math.random()*3.2;ctx.fillRect(Math.random()*W,Math.random()*H,s,s);}
+    const g=ctx.createRadialGradient(W/2,H/2,H*.12,W/2,H/2,H*.95);
+    g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(40,6,4,.85)');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  }
+  const R=o.mode==='ink'?34:52;
+  let drawing=false,lx=0,ly=0,strokes=0,done=false;
+  const pos=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height];};
+  const carve=(x,y)=>{
+    ctx.globalCompositeOperation='destination-out';
+    const g=ctx.createRadialGradient(x,y,R*.25,x,y,R);
+    g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,R,0,7);ctx.fill();
+    ctx.globalCompositeOperation='source-over';};
+  const ratio=()=>{const d=ctx.getImageData(0,0,W,H).data;let c=0,n=0;
+    for(let i=3;i<d.length;i+=4*97){n++;if(d[i]<40)c++;}return c/n;};
+  const finish=()=>{if(done)return;done=true;
+    cv.style.transition='opacity 1.1s';cv.style.opacity='0';el('dh2').style.display='none';
+    setTimeout(()=>{cv.remove();o.onDone();},1150);};
+  cv.addEventListener('pointerdown',e=>{drawing=true;[lx,ly]=pos(e);carve(lx,ly);el('dh2').style.opacity='.25';cv.setPointerCapture(e.pointerId);});
+  cv.addEventListener('pointermove',e=>{
+    if(!drawing||done)return;
+    const[x,y]=pos(e);const dx=x-lx,dy=y-ly,dist=Math.hypot(dx,dy),steps=Math.max(1,Math.floor(dist/(R*.4)));
+    for(let i=1;i<=steps;i++)carve(lx+dx*i/steps,ly+dy*i/steps);
+    lx=x;ly=y;
+    if(++strokes%14===0&&ratio()>(o.threshold||.5))finish();});
+  cv.addEventListener('pointerup',()=>{drawing=false;if(!done&&ratio()>(o.threshold||.5))finish();});
+}
 
 function go(id){setTap(null);stage.onclick=null;SC[id]();}
 go('prologue');
