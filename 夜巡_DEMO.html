@@ -275,6 +275,21 @@ select.inp option{background:#14161A;color:var(--ink)}
 .brief .bh{font-size:11px;letter-spacing:.3em;color:var(--gold);margin-bottom:10px}
 .brief em{color:var(--gold-l);font-style:normal}
 
+.drawer{border:1px solid var(--gold-d);background:rgba(201,162,39,.08);padding:18px 20px;margin:16px 0;text-align:center}
+.drawer .dn{font-size:11px;letter-spacing:.4em;color:var(--gold);margin-bottom:9px}
+.drawer .dv{font-family:var(--serif);font-size:clamp(18px,2.8vw,23px);color:var(--gold-l);line-height:1.7}
+/* 緊急待辦 */
+.fires{width:min(560px,92vw);margin:0 auto}
+.fires .fh{font-size:11px;letter-spacing:.44em;color:var(--red);text-align:center;margin-bottom:20px}
+.fire{border:1px solid rgba(184,68,60,.42);background:rgba(20,10,10,.84);padding:15px 18px;margin-bottom:10px;
+  cursor:pointer;transition:.24s;display:flex;align-items:center;gap:14px;
+  opacity:0;transform:translateX(-10px);animation:fu .5s forwards}
+.fire:hover{border-color:var(--red);background:rgba(184,68,60,.16);transform:translateX(4px)}
+.fire.done{opacity:.32;pointer-events:none;border-color:rgba(201,162,39,.2);background:rgba(10,11,14,.6)}
+.fire .fi{font-family:var(--serif);font-size:20px;color:#D9756C;flex:0 0 auto}
+.fire.done .fi{color:var(--jade)}
+.fire .ft{flex:1;font-size:15px;color:#DEDAD2;line-height:1.6}
+.fire .fs2{font-size:11px;letter-spacing:.2em;color:var(--dim);flex:0 0 auto}
 #flash{position:fixed;inset:0;background:#000;z-index:60;opacity:0;pointer-events:none;transition:opacity .55s}
 #flash.on{opacity:1;pointer-events:all}
 .note{font-size:12.5px;color:var(--dim);line-height:1.9;margin-top:14px;max-width:56ch}
@@ -331,7 +346,7 @@ select.inp option{background:#14161A;color:var(--ink)}
 const S={
   name:'',sur:'',birth:1976,age:50,photo:null,
   marital:'',career:'',relic:'',risk:'',
-  pos:0,lap:0,time:360,marks:0,visited:{},
+  fires:[],doneFires:[],time:360,
   flags:{},data:{},changed:[],newRelics:[],rolls:[],
   ax:{事業:0,家庭:0,傳承:0},
   dim:{決斷:0,傳承:0,風險:0,情感:0,遠見:0},
@@ -341,7 +356,7 @@ const el=id=>document.getElementById(id);
 const stage=el('stage'),bgEl=el('bg'),app=el('app');
 const still='animation:none;opacity:1;transform:none';
 const RELIC_BONUS={pen:['決斷',2],watch:['傳承',2],photo:['情感',2],key:['風險',2]};
-const NEED_MARKS=4;
+const NEED_MARKS=3;
 
 function setTap(fn){app.onclick=fn;app.style.cursor=fn?'pointer':'default';}
 function setBg(src){
@@ -357,8 +372,8 @@ function paint(){
   const t=Math.max(0,S.time);
   el('clock').className=t<=90?'low':'';
   el('clock').innerHTML=t>0?`天亮還有 <b>${Math.floor(t/60)}</b> 小時 <b>${String(t%60).padStart(2,'0')}</b> 分`:`<b>天 亮 了</b>`;
-  el('marks').innerHTML='<span style="margin-right:7px">印記</span>'+
-    Array.from({length:NEED_MARKS},(_,i)=>`<span class="mk ${i<S.marks?'f':''}"></span>`).join('');
+  el('marks').innerHTML='<span style="margin-right:7px">待辦</span>'+
+    Array.from({length:NEED_MARKS},(_,i)=>`<span class="mk ${i<S.doneFires.length?'f':''}"></span>`).join('');
 }
 function fade(fn){el('flash').classList.add('on');setTimeout(()=>{fn();el('flash').classList.remove('on');},520);}
 function spend(m){S.time-=m;paint();}
@@ -421,6 +436,7 @@ function rewrite(text,then){
 }
 
 /* ── 對白 ── */
+function say(o){ play({...o, render:o.onEnd}); }
 function play(o){
   if(o.bg!==undefined)setBg(o.bg);
   let i=0;const all=o.lines||[];
@@ -461,8 +477,8 @@ function ask(o){
         if(p.flag)S.flags[p.flag[0]]=p.flag[1];
         if(p.ax)for(const k in p.ax)S.ax[k]+=p.ax[k];
         if(p.dim)for(const k in p.dim)S.dim[k]+=p.dim[k];
-        S.last={t:p.t,note:note||'',tags:tags||[]};
-        o.done();
+        if(!p.jump)S.last={t:p.t,note:note||'',tags:tags||[]};
+        o.done(p);
       };
       if(p.check){
         check(p.check,ok=>{
@@ -484,42 +500,33 @@ function ask(o){
   }});
 }
 
-/* ── 落點後的收尾（給印記 → 回棋盤）── */
-function afterTile(gainMark){
-  const tail=[];
-  if(S.last&&S.last.note)tail.push(`<div class="ln">${S.last.note}</div>`);
-  if(gainMark){S.marks++;paint();
-    tail.push(`<div class="ln q" style="animation-delay:.4s">你在紀錄冊上蓋下一枚印記。</div>`);
-    tail.push(`<div class="spk" style="animation-delay:.8s;margin-top:14px">印記 ${S.marks} / ${NEED_MARKS}</div>`);}
-  stage.innerHTML=tail.join('')+`<div class="tap" style="animation-delay:1.2s">點擊繼續</div>`;
-  setTap(()=>{setTap(null);fade(()=>go(S.marks>=NEED_MARKS?'unlock':'board'));});
-}
-
 const SC={};
 
 /* ══ 序章 ══ */
 SC.prologue=()=>{
   hud(false);pov(true);
-  const B=[
-    {bg:'assets/13_pov_letter.jpg',t:4200,l:['深夜十一點四十分。','司機還在等，你在後座拆開這封信。']},
-    {bg:'assets/13_pov_letter.jpg',t:4400,l:['沒有署名。','只有一個地址、一枚火漆，和一句話——','<span style="color:var(--gold-l)">「本館遺失了一件東西。只有你能找回來。」</span>']},
-    {bg:'assets/01_door.jpg',t:4000,l:['地址在你公司地下二樓。','那扇你走過十年、從來沒開過的鐵門。','今晚，它是開的。']},
-    {bg:'assets/14_pov_corridor.jpg',t:4200,l:['門後不是倉庫。','是一條不該存在的長廊。','展櫃裡的東西，你在課本上見過。']},
-    {bg:'assets/14_pov_corridor.jpg',t:3600,l:['走廊盡頭有燈。','桌上放著一份文件，等你簽。']}
-  ];
-  el('skip').style.display='block';
-  let i=0,timer;
-  const end=()=>{clearTimeout(timer);el('skip').style.display='none';pov(false);fade(()=>go('warrant'));};
-  el('skip').onclick=end;
-  const beat=()=>{
-    if(i>=B.length)return end();
-    const b=B[i];setBg(b.bg);
-    stage.innerHTML=b.l.map((t,k)=>`<div class="ln" style="animation-delay:${.4+k*.85}s">${t}</div>`).join('');
-    timer=setTimeout(beat,b.t);i++;
-  };beat();
+  say({bg:LOST.bg,lines:LOST.lines,onEnd(){
+    ask({bg:LOST.bg,lines:[],q:LOST.q,field:LOST.field,key:LOST.key,opts:LOST.opts,
+      done(p){
+        say({lines:[p.echo,'<span style="color:var(--gold-l)">三天後，一封沒有署名的信送到你手上。</span>'],
+          onEnd(){fade(()=>go('summon'));}});
+      }});
+  }});
 };
 
-/* ══ 委任狀 ══ */
+/* 召喚：你被選中，不是因為你厲害 */
+SC.summon=()=>{
+  say({bg:'assets/13_pov_letter.jpg',
+    lines:['沒有寄件人。只有一枚火漆，和幾行字。',
+           '<span style="color:var(--gold-l)">「本館遺失了一件東西。」</span>',
+           '<span style="color:var(--gold-l)">「館規第一條：館長必須是外行。」</span>',
+           '「因為館裡每一件東西，都比你懂。」',
+           '<span style="color:var(--muted);font-size:.88em">你把信翻過來，背面還有一行小字。</span>',
+           '<span style="color:var(--gold-l)">「上一個懂的人，把這裡管垮了。」</span>',
+           '地址在你公司地下二樓——那扇你走過十年、從來沒開過的鐵門。'],
+    onEnd(){pov(false);fade(()=>go('warrant'));}});
+};
+
 SC.warrant=()=>{
   setBg('assets/01_door.jpg');
   const years=[];for(let y=1996;y>=1946;y--)years.push(y);
@@ -578,6 +585,8 @@ SC.warrant=()=>{
     for(const k in RK[1])S.dim[k]+=RK[1][k];
     S.data.base={field:'基本資料',a:`${S.birth} 年生 ・ ${S.age} 歲 ・ ${{single:'未婚',married:'已婚',kids:'已婚有子女'}[S.marital]}`,
                  val:{build:'事業建立期',own:'當家期',pass:'交棒準備期'}[S.career]};
+    S.fires=[...CONFLICT_POOL].sort(()=>Math.random()-.5).slice(0,3);
+    S.doneFires=[];
     fade(()=>go('enter'));
   };
 };
@@ -605,160 +614,78 @@ SC.dust=()=>{
       setTap(null);pov(false);hud(true);
       stage.insertAdjacentHTML('beforeend',
         `<div class="ln q" style="margin-top:20px">六點鐘響，一切歸位。它沒回來，就永遠不在了。</div>
-         <div class="ln" style="font-size:18px;color:#CFCBC3">館裡有十六個位置。走過去，問過去，蒐集四枚印記——<br>櫃子才會為你打開。</div>
-         <button class="btn" id="s">開 始 夜 巡</button>`);
-      el('s').onclick=e=>{e.stopPropagation();fade(()=>go('board'));};
+         <div class="ln" style="font-size:18px;color:#CFCBC3">你正想開始找——<br><span style="color:var(--gold-l)">四面八方同時傳來吼叫聲。</span></div>
+         <button class="btn" id="s">去 看 看</button>`);
+      el('s').onclick=e=>{e.stopPropagation();shake();fade(()=>go('fires'));};
     }});
 };
 
 /* ══ 棋盤 ══ */
-function tileClass(t,idx){
-  let c='tile t-'+t.type;
-  if(idx===S.pos)c+=' here';
-  if(S.visited[idx])c+=' done';
-  return c;
-}
-SC.board=()=>{
-  setBg('assets/02_vitrine.jpg');pov(false);hud(true);
-  if(S.time<=0)return go('timeup');
-  const cells=Array.from({length:25},()=>'');
-  BOARD.forEach((t,idx)=>{
-    const[c,r]=CELLS[idx];
-    cells[(r-1)*5+(c-1)]=`<div class="${tileClass(t,idx)}" style="grid-column:${c};grid-row:${r}">
-        <div class="ic">${t.icon}</div><div class="nm">${t.name}</div></div>`;
-  });
-  const open=S.marks>=NEED_MARKS;
-  stage.innerHTML=`
-    <div class="boardwrap">
-      <div class="board">
-        ${cells.filter(Boolean).join('')}
-        <div class="core ${open?'open':''}">
-          <div class="ct">翠玉白菜</div>
-          <div class="cs">${open?'櫃 門 已 解 鎖':`需要 ${NEED_MARKS} 枚印記`}</div>
-          <div class="cm">${Array.from({length:NEED_MARKS},(_,i)=>`<span class="mk ${i<S.marks?'f':''}"></span>`).join('')}</div>
-        </div>
-      </div>
-      <div class="boardbar">
-        <div class="dscene" id="ds"><div class="dcube" id="bcube"></div></div>
-        <div>
-          <div class="dhint" id="dh">點 骰 子 前 進</div>
-          <div style="font-size:11.5px;color:var(--dim);letter-spacing:.1em;margin-top:8px">每走一步 −8 分</div>
-        </div>
-      </div>
-      <div class="bnote">你現在在<b style="color:var(--gold-l)">「${BOARD[S.pos].name}」</b>。
-      骰子決定你走到哪——<br>每個人遇到的文物、歷史與危機都不一樣。</div>
-    </div>`;
-  const cube=el('bcube');buildCube(cube);
-  let rolled=false;
-  el('ds').onclick=()=>{
-    if(rolled)return;rolled=true;
-    el('dh').textContent='⋯⋯';
-    const n=1+Math.floor(Math.random()*6);
-    tumble(cube,n,()=>{
-      el('dh').innerHTML=`前 進 <b style="color:var(--gold-l)">${n}</b> 步`;
-      setTimeout(()=>stepMove(n),500);
-    });
-  };
-};
-function stepMove(n){
-  let left=n;
-  const hop=()=>{
-    if(left<=0){
-      spend(8*n);
-      setTimeout(()=>fade(()=>go('land')),450);return;
-    }
-    S.pos=(S.pos+1)%16;
-    if(S.pos===0)S.lap++;
-    left--;
-    document.querySelectorAll('.tile').forEach((el2,i)=>{
-      el2.className=tileClass(BOARD[i],i);
-    });
-    setTimeout(hop,230);
-  };
-  hop();
-}
-
-/* ══ 落點分派 ══ */
-SC.land=()=>{
-  const t=BOARD[S.pos];
-  const seen=S.visited[S.pos];
-  S.visited[S.pos]=true;
-  if(t.type==='start')return go('startTile');
-  if(seen)return go('revisit');
-  if(t.type==='relic')  return relicTile(RELICS[t.key]);
-  if(t.type==='history')return historyTile(HISTORY[t.key]);
-  if(t.type==='crisis') return crisisTile(CRISES[t.key]);
-  if(t.type==='chance') return chanceTile();
-};
-SC.startTile=()=>{
-  play({bg:'assets/01_door.jpg',spk:'入 口',
-    lines:['你繞回了起點。','鐵門還是鎖著的。門縫下面透進一點天光——','<span style="color:var(--gold-l)">已經快了。</span>'],
-    render(){spend(0);afterTile(false);}});
-};
-SC.revisit=()=>{
-  const t=BOARD[S.pos];
-  play({bg:'assets/14_pov_corridor.jpg',spk:t.name,
-    lines:['你又回到了這裡。','「剛剛不是問過你了嗎。」','它把頭轉回去，不再理你。'],
-    render(){spend(10);afterTile(false);}});
+/* ══ 三件事同時爆 ══ */
+SC.fires=()=>{
+  pov(false);hud(true);
+  const left=S.fires.filter(f=>!S.doneFires.includes(f));
+  if(!left.length)return fade(()=>go('reveal'));
+  const first=S.doneFires.length===0;
+  setBg('assets/02_vitrine.jpg');
+  stage.innerHTML=`<div class="fires">
+    <div class="fh">${first?'三 個 地 方 同 時 出 事':`還 有 ${left.length} 件 沒 處 理`}</div>
+    ${S.fires.map((f,i)=>{
+      const c=CONFLICTS[f],done=S.doneFires.includes(f);
+      return `<div class="fire ${done?'done':''}" data-f="${f}" style="animation-delay:${.08+i*.09}s">
+        <div class="fi">${done?'✓':'!'}</div>
+        <div class="ft">${c.urgent}</div>
+        <div class="fs2">${done?'已處理':'前往 →'}</div></div>`;}).join('')}
+    <div class="bnote">${first?'你是全場唯一不懂的人。<br>但他們只認你這個館長。':'螽斯還沒找到。而天亮不會等你。'}</div></div>`;
+  stage.querySelectorAll('.fire:not(.done)').forEach(n=>n.onclick=e=>{
+    e.stopPropagation();const key=n.dataset.f;fade(()=>runConflict(key));});
 };
 
-/* 文物格 */
-function relicTile(R){
-  if(R.shake){shake();setTimeout(shake,800);}
-  let block=R;
-  if(R.branch==='marital')block=(S.marital==='single')?R.single:R.family;
-  if(R.branch==='kids')   block=(S.marital==='kids')?R.haskids:R.nokids;
-  ask({bg:R.bg,spk:`${R.who}`,lines:R.intro,q:block.q,field:block.field,key:block.key,opts:block.opts,
+/* 一場衝突：吵架 → 閃回（可改寫）→ 回館裁決 */
+function runConflict(key){
+  const C=CONFLICTS[key];
+  if(C.shake)shake();
+  const n=S.doneFires.length+1;
+  S.last=null;
+  ask({bg:C.bg,spk:`第 ${'一二三'[n-1]} 件 ・ ${C.title}`,lines:C.intro,
+    q:C.flashback?'<span style="color:var(--muted);font-size:.86em">你正想開口，眼前的燈忽然變了顏色——</span>':C.verdict.q,
+    opts:C.flashback?[{t:'（眨一下眼）',jump:true}]:C.verdict.opts,
+    field:C.verdict.field,key:C.verdict.key,
     done(){
-      if(R.outro)S.last.note=(S.last.note?S.last.note+'　':'')+R.outro;
-      spend(20);afterTile(true);
+      if(!C.flashback)return finishConflict(C,key);
+      const F=C.flashback;
+      fade(()=>ask({bg:F.bg,spk:'',era:F.era,lines:F.lines,q:F.q,opts:F.opts,
+        done(){fade(()=>doVerdict(C,key));}}));
     }});
 }
-/* 歷史格：① 改寫歷史 → ② 那個時代反問你的人生 */
-function historyTile(H){
-  ask({bg:H.bg,spk:`歷 史 節 點 ・ ${H.title}`,era:H.era,lines:H.intro,q:H.q,opts:H.opts,
-    done(){
-      spend(20);
-      if(!H.mirror)return afterTile(true);
-      // 過場：先看見剛才那一下的後果，再被反問
-      const note=S.last&&S.last.note?`<div class="ln" style="${still}">${S.last.note}</div>`:'';
-      stage.innerHTML=note+`<div class="tap">點擊繼續</div>`;
-      setTap(()=>{setTap(null);fade(()=>mirrorTile(H));});
-    }});
+function doVerdict(C,key){
+  const V=C.verdict;
+  ask({bg:C.bg,spk:C.who,lines:V.lines,q:V.q,field:V.field,key:V.key,opts:V.opts,
+    done(){finishConflict(C,key);}});
 }
-function mirrorTile(H){
-  const M=H.mirror;
-  ask({bg:H.bg,spk:`${H.era} ・ ${M.who}`,lines:M.lines,q:M.q,
-    field:M.field,key:M.key,opts:M.opts,
-    done(){spend(15);afterTile(true);}});
+function finishConflict(C,key){
+  if(!S.doneFires.includes(key))S.doneFires.push(key);
+  paint();
+  fade(()=>go('fires'));
 }
-/* 危機格 */
-function crisisTile(C){
-  shake();
-  ask({bg:C.bg,spk:`危 機 ・ ${C.title}`,lines:C.intro,q:C.q,opts:C.opts,
-    done(){spend(15);afterTile(false);}});
-}
-/* 機會格 */
-function chanceTile(){
-  const c=CHANCES[Math.floor(Math.random()*CHANCES.length)];
-  play({bg:'assets/02_vitrine.jpg',spk:'典 藏 籤',
-    lines:[`<span style="color:var(--gold-l)">${c.t}</span>`,c.d],
-    render(){
-      if(c.time)spend(-c.time);
-      if(c.dim)for(const k in c.dim)S.dim[k]+=c.dim[k];
-      S.last={t:c.t,note:c.d,tags:[c.time?(c.time>0?`時間 +${c.time}`:`時間 ${c.time}`):'',c.mark?'印記 ＋1':''].filter(Boolean)};
-      spend(10);afterTile(!!c.mark);
-    }});
-}
+
 
 /* ══ 解鎖 → 挖印泥 ══ */
-SC.unlock=()=>{
+SC.unlock_unused=()=>{
   pov(true);
   play({bg:'assets/03_qianlong.jpg',spk:'解 鎖',
     lines:['四枚印記湊齊的瞬間，中央展櫃的鎖「喀」一聲彈開了。',
            '而所有線索都指向同一個地方——','<span style="color:var(--gold-l)">乾隆的印泥盒。</span>'],
     render(){fade(()=>go('inkdig'));}});
 };
+/* ══ 逆轉：八十六個抽屜 ══ */
+SC.reveal=()=>{
+  pov(true);
+  say({bg:REVEAL.bg,spk:'庫 房 深 處',lines:REVEAL.lines,onEnd(){
+    say({spk:'館 内',lines:REVEAL.after,onEnd(){pov(false);fade(()=>go('inkdig'));}});
+  }});
+};
+
 SC.inkdig=()=>{
   pov(true);
   dig({bg:'assets/03_qianlong.jpg',spk:'五 時',
@@ -844,7 +771,7 @@ SC.render=()=>{
       <div class="bar"><i id="pb"></i></div><div class="rlog" id="rl">讀取這一夜的裁決紀錄⋯⋯</div></div>`;
   const e=pickEnd();
   const L=['讀取這一夜的裁決紀錄⋯⋯',
-    `你走過 ${Object.keys(S.visited).length} 個位置 ・ 主軸：${e.key}`,
+    `主軸：${e.key} ・ 調停 ${S.doneFires.length} 場跨朝代衝突`,
     S.changed.length?`偵測到 ${S.changed.length} 處歷史改寫⋯⋯正在重新比對館藏`:'歷史維持原狀',
     S.rolls.length?`判定 ${S.rolls.length} 次 ・ 成 ${S.rolls.filter(r=>r.ok).length} 敗 ${S.rolls.filter(r=>!r.ok).length}`:'這一夜，你沒有賭過一次',
     S.photo?'將您的形象繪入交接影像⋯⋯':'以館長形象繪製交接影像⋯⋯','封存完成。'];
@@ -872,8 +799,8 @@ SC.film=()=>{
     <div class="note" style="text-align:center">這支影像由你今晚的路徑決定——走過不同格子的人，看到的是另一支。</div>`;
   const v=el('v');v.play().catch(()=>{});
   el('sound').onclick=ev=>{ev.stopPropagation();v.muted=!v.muted;el('sound').textContent=v.muted?'點 此 開 啟 聲 音':'聲 音 已 開 啟';};
-  setTimeout(()=>el('ov').classList.add('on'),2200);
-  setTimeout(()=>{const b=el('nx');b.style.opacity='1';b.style.pointerEvents='auto';},7500);
+  setTimeout(()=>{const o=el('ov');if(o)o.classList.add('on');},2200);
+  setTimeout(()=>{const b=el('nx');if(b){b.style.opacity='1';b.style.pointerEvents='auto';}},7500);
   el('n').onclick=()=>fade(()=>go('analysis'));
 };
 
@@ -903,6 +830,10 @@ function voice(){
   if(e==='傳承')return['他問的那些問題，當年沒有人問過我。如果有人問過，也許東西就不會散了。','溥儀'];
   return['朕見過很多想贏的人。他是少數贏了之後，還記得回頭看一眼的。','乾隆'];
 }
+function lostBack(){
+  return{person:'那個人的名字，寫在紙條上。',time:'那幾年，被折成一張很小的紙。',
+         thing:'那樣東西，靜靜躺在絨布上。',promise:'那個承諾，終於被寫完了。'}[S.flags.lost]||'那樣東西，回來了。';
+}
 SC.analysis=()=>{
   setBg('assets/08_cabbage.jpg');
   const D=['決斷','傳承','風險','情感','遠見'];
@@ -919,6 +850,8 @@ SC.analysis=()=>{
     <div class="an">
       <div class="antype"><div class="k">第 087 任館長 ・ 裁決分析</div>
         <div class="t">${TY[0]}</div><div class="s">${TY[1]}</div></div>
+      <div class="drawer"><div class="dn">第 0 8 7 號 抽 屜</div>
+        <div class="dv">${lostBack()}</div></div>
       <div class="bars">${D.map(k=>`<div class="brow2"><div class="bl">${k}</div><div class="bt"><i data-w="${pct[k]}"></i></div><div class="bv">${pct[k]}</div></div>`).join('')}</div>
       ${S.changed.length?`<div class="hist"><div class="hh">因 你 而 存 在 的 館 藏</div>
         ${S.changed.map((c,i)=>`<div class="hi">${c}${S.newRelics[i]?`<br><span style="font-size:13px;color:var(--jade);opacity:.8">→ 館藏增列：${S.newRelics[i]}</span>`:''}</div>`).join('')}</div>`:''}
@@ -940,7 +873,7 @@ SC.record=()=>{
       <div class="rl"><div class="a">任 期</div><div class="b">二〇二六年 ・ 一夜</div></div>
       <div class="rl"><div class="a">館 長</div><div class="b gold">第 087 任 ・ ${S.name}</div></div>
       <div class="rl"><div class="a">館 藏</div><div class="b gold">${S.flags.late?'螽斯自行歸位':'任內無失 ・ 螽斯歸位'}</div></div>
-      <div class="rl"><div class="a">巡 經</div><div class="b">${Object.keys(S.visited).length} 個位置 ・ 印記 ${S.marks}</div></div>
+      <div class="rl"><div class="a">調 停</div><div class="b">${S.doneFires.length} 場跨朝代衝突</div></div>
       ${S.changed.length?`<div class="rl"><div class="a">歷 史</div><div class="b" style="color:var(--jade)">改寫 ${S.changed.length} 處</div></div>`:''}
       ${S.newRelics.length?`<div class="rl"><div class="a">增 列</div><div class="b" style="color:var(--jade);font-size:14.5px;line-height:1.9">${S.newRelics.join('<br>')}</div></div>`:''}
       <div class="rl"><div class="a">附 記</div><div class="b gold">「${S.motto}」</div></div>
@@ -1008,6 +941,9 @@ SC.backstage=()=>{
 
 /* ── 撥開／挖掘 ── */
 function dig(o){
+  setTimeout(()=>_dig(o),30);
+}
+function _dig(o){
   setBg(o.bg||'');
   stage.innerHTML=(o.spk?`<div class="spk" style="${still}">${o.spk}</div>`:'')
     +(o.lines||[]).map(t=>`<div class="ln" style="${still}">${t}</div>`).join('')
@@ -1017,7 +953,13 @@ function dig(o){
   if(o.underImg)du.style.backgroundImage=`url('${o.underImg}')`;
   if(o.underHtml)du.innerHTML=o.underHtml;
   const wrap=el('dw'),cv=el('dc'),ctx=cv.getContext('2d',{willReadFrequently:true});
-  const W=wrap.clientWidth,H=wrap.clientHeight;cv.width=W;cv.height=H;
+  let W=wrap.clientWidth,H=wrap.clientHeight;
+  if(!W||!H){
+    W=Math.min(720,Math.round((window.innerWidth||document.documentElement.clientWidth||1280)*0.92))||640;
+    H=Math.round(W*10/16);
+    wrap.style.width=W+'px';wrap.style.height=H+'px';
+  }
+  cv.width=W;cv.height=H;
   if(o.mode==='dust'){
     ctx.fillStyle='#6B655B';ctx.fillRect(0,0,W,H);
     const g=ctx.createRadialGradient(W/2,H/2,H*.1,W/2,H/2,H*.9);
